@@ -1,0 +1,919 @@
+---
+title: "Length"
+kind: struct
+path: "iced_renderer::geometry::path::lyon_path::geom::euclid::Length"
+crate: "iced_renderer"
+module: "iced_renderer::geometry::path::lyon_path::geom::euclid"
+file: "iced_renderer/geometry/path/lyon_path/geom/euclid/struct.Length.md"
+docs_url: "https://docs.iced.rs/iced_renderer/geometry/path/lyon_path/geom/euclid/struct.Length.html"
+---
+
+# `iced_renderer::geometry::path::lyon_path::geom::euclid::Length`
+
+```rust
+pub struct Length<T, Unit>(pub T, _);
+```
+
+A one-dimensional distance, with value represented by `T` and unit of measurement `Unit`.
+
+`T` can be any numeric type, for example a primitive type like `u64` or `f32`.
+
+`Unit` is not used in the representation of a `Length` value. It is used only at compile time to ensure that a `Length` stored with one unit is converted explicitly before being used in an expression that requires a different unit. It may be a type without values, such as an empty enum.
+
+You can multiply a `Length` by a [`Scale`](struct.Scale.md) to convert it from one unit to another. See the [`Scale`](struct.Scale.md) docs for an example.
+
+## Fields
+
+### `0: T`
+
+## Methods
+
+### `impl<T, U> Length<T, U>`
+
+#### `new`
+
+```rust
+pub const fn new(x: T) -> Length<T, U>
+```
+
+Associate a value with a unit of measure.
+
+### `impl<T, U> Length<T, U> where T: Clone,`
+
+#### `get`
+
+```rust
+pub fn get(self) -> T
+```
+
+Unpack the underlying value from the wrapper.
+
+#### `cast_unit`
+
+```rust
+pub fn cast_unit<V>(self) -> Length<T, V>
+```
+
+Cast the unit
+
+#### `lerp`
+
+```rust
+pub fn lerp(self, other: Length<T, U>, t: T) -> Length<T, U> where T: One + Sub<Output = T> + Mul<Output = T> + Add<Output = T>,
+```
+
+Linearly interpolate between this length and another length.
+
+###### Example
+
+```rust
+use euclid::default::Length;
+
+let from = Length::new(0.0);
+let to = Length::new(8.0);
+
+assert_eq!(from.lerp(to, -1.0), Length::new(-8.0));
+assert_eq!(from.lerp(to,  0.0), Length::new( 0.0));
+assert_eq!(from.lerp(to,  0.5), Length::new( 4.0));
+assert_eq!(from.lerp(to,  1.0), Length::new( 8.0));
+assert_eq!(from.lerp(to,  2.0), Length::new(16.0));
+```
+
+### `impl<T, U> Length<T, U> where T: PartialOrd,`
+
+#### `min`
+
+```rust
+pub fn min(self, other: Length<T, U>) -> Length<T, U>
+```
+
+Returns minimum between this length and another length.
+
+#### `max`
+
+```rust
+pub fn max(self, other: Length<T, U>) -> Length<T, U>
+```
+
+Returns maximum between this length and another length.
+
+### `impl<T, U> Length<T, U> where T: NumCast + Clone,`
+
+#### `cast`
+
+```rust
+pub fn cast<NewT>(self) -> Length<NewT, U> where NewT: NumCast,
+```
+
+Cast from one numeric representation to another, preserving the units.
+
+#### `try_cast`
+
+```rust
+pub fn try_cast<NewT>(self) -> Option<Length<NewT, U>> where NewT: NumCast,
+```
+
+Fallible cast from one numeric representation to another, preserving the units.
+
+## Trait Implementations
+
+### `impl<T, U> Add<&Length<T, U>> for Length<T, U> where T: Add + Copy,`
+
+#### `Output`
+
+```rust
+type Output = Length<<T as Add>::Output, U>
+```
+
+The resulting type after applying the `+` operator.
+
+#### `add`
+
+```rust
+fn add( self, other: &Length<T, U>, ) -> <Length<T, U> as Add<&Length<T, U>>>::Output
+```
+
+Performs the `+` operation. [Read more](https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html#tymethod.add)
+
+### `impl<T, U> Add for Length<T, U> where T: Add,`
+
+#### `Output`
+
+```rust
+type Output = Length<<T as Add>::Output, U>
+```
+
+The resulting type after applying the `+` operator.
+
+#### `add`
+
+```rust
+fn add(self, other: Length<T, U>) -> <Length<T, U> as Add>::Output
+```
+
+Performs the `+` operation. [Read more](https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html#tymethod.add)
+
+### `impl<T, U> AddAssign for Length<T, U> where T: AddAssign,`
+
+#### `add_assign`
+
+```rust
+fn add_assign(&mut self, other: Length<T, U>)
+```
+
+Performs the `+=` operation. [Read more](https://doc.rust-lang.org/nightly/core/ops/arith/trait.AddAssign.html#tymethod.add_assign)
+
+### `impl<U, T> ApproxEq<T> for Length<T, U> where T: ApproxEq<T>,`
+
+#### `approx_epsilon`
+
+```rust
+fn approx_epsilon() -> T
+```
+
+Default epsilon value
+
+#### `approx_eq_eps`
+
+```rust
+fn approx_eq_eps(&self, other: &Length<T, U>, approx_epsilon: &T) -> bool
+```
+
+Returns `true` if this object is approximately equal to the other one, using a provided epsilon value.
+
+#### `approx_eq`
+
+```rust
+fn approx_eq(&self, other: &Self) -> bool
+```
+
+Returns `true` if this object is approximately equal to the other one, using the [`approx_epsilon`](approxeq/trait.ApproxEq.md) epsilon value.
+
+### `impl<T, U> Clone for Length<T, U> where T: Clone,`
+
+#### `clone`
+
+```rust
+fn clone(&self) -> Length<T, U>
+```
+
+Returns a duplicate of the value. [Read more](https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone)
+
+#### `clone_from`
+
+```rust
+fn clone_from(&mut self, source: &Self)
+```
+
+Performs copy-assignment from `source`. [Read more](https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from)
+
+### `impl<T, U> Debug for Length<T, U> where T: Debug,`
+
+#### `fmt`
+
+```rust
+fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error>
+```
+
+Formats the value using the given formatter. [Read more](https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt)
+
+### `impl<T, U> Default for Length<T, U> where T: Default,`
+
+#### `default`
+
+```rust
+fn default() -> Length<T, U>
+```
+
+Returns the “default value” for a type. [Read more](https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default)
+
+### `impl<Src, Dst, T> Div<Length<T, Src>> for Length<T, Dst> where T: Div,`
+
+#### `Output`
+
+```rust
+type Output = Scale<<T as Div>::Output, Src, Dst>
+```
+
+The resulting type after applying the `/` operator.
+
+#### `div`
+
+```rust
+fn div( self, other: Length<T, Src>, ) -> <Length<T, Dst> as Div<Length<T, Src>>>::Output
+```
+
+Performs the `/` operation. [Read more](https://doc.rust-lang.org/nightly/core/ops/arith/trait.Div.html#tymethod.div)
+
+### `impl<Src, Dst, T> Div<Scale<T, Src, Dst>> for Length<T, Dst> where T: Div,`
+
+#### `Output`
+
+```rust
+type Output = Length<<T as Div>::Output, Src>
+```
+
+The resulting type after applying the `/` operator.
+
+#### `div`
+
+```rust
+fn div( self, scale: Scale<T, Src, Dst>, ) -> <Length<T, Dst> as Div<Scale<T, Src, Dst>>>::Output
+```
+
+Performs the `/` operation. [Read more](https://doc.rust-lang.org/nightly/core/ops/arith/trait.Div.html#tymethod.div)
+
+### `impl<T, U> Div<T> for Length<T, U> where T: Div,`
+
+#### `Output`
+
+```rust
+type Output = Length<<T as Div>::Output, U>
+```
+
+The resulting type after applying the `/` operator.
+
+#### `div`
+
+```rust
+fn div(self, scale: T) -> <Length<T, U> as Div<T>>::Output
+```
+
+Performs the `/` operation. [Read more](https://doc.rust-lang.org/nightly/core/ops/arith/trait.Div.html#tymethod.div)
+
+### `impl<T, U> DivAssign<T> for Length<T, U> where T: Copy + Div<Output = T>,`
+
+#### `div_assign`
+
+```rust
+fn div_assign(&mut self, scale: T)
+```
+
+Performs the `/=` operation. [Read more](https://doc.rust-lang.org/nightly/core/ops/arith/trait.DivAssign.html#tymethod.div_assign)
+
+### `impl<T, U> Hash for Length<T, U> where T: Hash,`
+
+#### `hash`
+
+```rust
+fn hash<H>(&self, h: &mut H) where H: Hasher,
+```
+
+Feeds this value into the given [`Hasher`](https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html). [Read more](https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#tymethod.hash)
+
+#### `hash_slice`
+
+```rust
+fn hash_slice<H>(data: &[Self], state: &mut H) where H: Hasher, Self: Sized,
+```
+
+Feeds a slice of this type into the given [`Hasher`](https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html). [Read more](https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#method.hash_slice)
+
+### `impl<Src, Dst, T> Mul<Scale<T, Src, Dst>> for Length<T, Src> where T: Mul,`
+
+#### `Output`
+
+```rust
+type Output = Length<<T as Mul>::Output, Dst>
+```
+
+The resulting type after applying the `*` operator.
+
+#### `mul`
+
+```rust
+fn mul( self, scale: Scale<T, Src, Dst>, ) -> <Length<T, Src> as Mul<Scale<T, Src, Dst>>>::Output
+```
+
+Performs the `*` operation. [Read more](https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html#tymethod.mul)
+
+### `impl<T, U> Mul<T> for Length<T, U> where T: Mul,`
+
+#### `Output`
+
+```rust
+type Output = Length<<T as Mul>::Output, U>
+```
+
+The resulting type after applying the `*` operator.
+
+#### `mul`
+
+```rust
+fn mul(self, scale: T) -> <Length<T, U> as Mul<T>>::Output
+```
+
+Performs the `*` operation. [Read more](https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html#tymethod.mul)
+
+### `impl<T, U> MulAssign<T> for Length<T, U> where T: Copy + Mul<Output = T>,`
+
+#### `mul_assign`
+
+```rust
+fn mul_assign(&mut self, scale: T)
+```
+
+Performs the `*=` operation. [Read more](https://doc.rust-lang.org/nightly/core/ops/arith/trait.MulAssign.html#tymethod.mul_assign)
+
+### `impl<U, T> Neg for Length<T, U> where T: Neg,`
+
+#### `Output`
+
+```rust
+type Output = Length<<T as Neg>::Output, U>
+```
+
+The resulting type after applying the `-` operator.
+
+#### `neg`
+
+```rust
+fn neg(self) -> <Length<T, U> as Neg>::Output
+```
+
+Performs the unary `-` operation. [Read more](https://doc.rust-lang.org/nightly/core/ops/arith/trait.Neg.html#tymethod.neg)
+
+### `impl<T, U> Ord for Length<T, U> where T: Ord,`
+
+#### `cmp`
+
+```rust
+fn cmp(&self, other: &Length<T, U>) -> Ordering
+```
+
+This method returns an [`Ordering`](https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html) between `self` and `other`. [Read more](https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.cmp)
+
+#### `max`
+
+```rust
+fn max(self, other: Self) -> Self where Self: Sized,
+```
+
+Compares and returns the maximum of two values. [Read more](https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.max)
+
+#### `min`
+
+```rust
+fn min(self, other: Self) -> Self where Self: Sized,
+```
+
+Compares and returns the minimum of two values. [Read more](https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.min)
+
+#### `clamp`
+
+```rust
+fn clamp(self, min: Self, max: Self) -> Self where Self: Sized,
+```
+
+Restrict a value to a certain interval. [Read more](https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#method.clamp)
+
+### `impl<T, U> PartialEq for Length<T, U> where T: PartialEq,`
+
+#### `eq`
+
+```rust
+fn eq(&self, other: &Length<T, U>) -> bool
+```
+
+Tests for `self` and `other` values to be equal, and is used by `==`.
+
+#### `ne`
+
+```rust
+fn ne(&self, other: &Rhs) -> bool
+```
+
+Tests for `!=`. The default implementation is almost always sufficient, and should not be overridden without very good reason.
+
+### `impl<T, U> PartialOrd for Length<T, U> where T: PartialOrd,`
+
+#### `partial_cmp`
+
+```rust
+fn partial_cmp(&self, other: &Length<T, U>) -> Option<Ordering>
+```
+
+This method returns an ordering between `self` and `other` values if one exists. [Read more](https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#tymethod.partial_cmp)
+
+#### `lt`
+
+```rust
+fn lt(&self, other: &Rhs) -> bool
+```
+
+Tests less than (for `self` and `other`) and is used by the `<` operator. [Read more](https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#method.lt)
+
+#### `le`
+
+```rust
+fn le(&self, other: &Rhs) -> bool
+```
+
+Tests less than or equal to (for `self` and `other`) and is used by the `<=` operator. [Read more](https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#method.le)
+
+#### `gt`
+
+```rust
+fn gt(&self, other: &Rhs) -> bool
+```
+
+Tests greater than (for `self` and `other`) and is used by the `>` operator. [Read more](https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#method.gt)
+
+#### `ge`
+
+```rust
+fn ge(&self, other: &Rhs) -> bool
+```
+
+Tests greater than or equal to (for `self` and `other`) and is used by the `>=` operator. [Read more](https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#method.ge)
+
+### `impl<T, U> Saturating for Length<T, U> where T: Saturating,`
+
+#### `saturating_add`
+
+```rust
+fn saturating_add(self, other: Length<T, U>) -> Length<T, U>
+```
+
+Saturating addition operator. Returns a+b, saturating at the numeric bounds instead of overflowing.
+
+#### `saturating_sub`
+
+```rust
+fn saturating_sub(self, other: Length<T, U>) -> Length<T, U>
+```
+
+Saturating subtraction operator. Returns a-b, saturating at the numeric bounds instead of overflowing.
+
+### `impl<T, U> Sub for Length<T, U> where T: Sub,`
+
+#### `Output`
+
+```rust
+type Output = Length<<T as Sub>::Output, U>
+```
+
+The resulting type after applying the `-` operator.
+
+#### `sub`
+
+```rust
+fn sub(self, other: Length<T, U>) -> <Length<T, U> as Sub>::Output
+```
+
+Performs the `-` operation. [Read more](https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html#tymethod.sub)
+
+### `impl<T, U> SubAssign for Length<T, U> where T: SubAssign,`
+
+#### `sub_assign`
+
+```rust
+fn sub_assign(&mut self, other: Length<T, U>)
+```
+
+Performs the `-=` operation. [Read more](https://doc.rust-lang.org/nightly/core/ops/arith/trait.SubAssign.html#tymethod.sub_assign)
+
+### `impl<'a, T, U> Sum<&'a Length<T, U>> for Length<T, U> where T: 'a + Add<Output = T> + Copy + Zero, U: 'a,`
+
+#### `sum`
+
+```rust
+fn sum<I>(iter: I) -> Length<T, U> where I: Iterator<Item = &'a Length<T, U>>,
+```
+
+Takes an iterator and generates `Self` from the elements by “summing up” the items.
+
+### `impl<T, U> Sum for Length<T, U> where T: Add<Output = T> + Zero,`
+
+#### `sum`
+
+```rust
+fn sum<I>(iter: I) -> Length<T, U> where I: Iterator<Item = Length<T, U>>,
+```
+
+Takes an iterator and generates `Self` from the elements by “summing up” the items.
+
+### `impl<T, U> Zero for Length<T, U> where T: Zero,`
+
+#### `zero`
+
+```rust
+fn zero() -> Length<T, U>
+```
+
+### `impl<T, U> Copy for Length<T, U> where T: Copy,`
+
+### `impl<T, U> Eq for Length<T, U> where T: Eq,`
+
+## Auto Trait Implementations
+
+- `impl<T, Unit> Freeze for Length<T, Unit> where T: Freeze,`
+- `impl<T, Unit> RefUnwindSafe for Length<T, Unit> where T: RefUnwindSafe, Unit: RefUnwindSafe,`
+- `impl<T, Unit> Send for Length<T, Unit> where T: Send, Unit: Send,`
+- `impl<T, Unit> Sync for Length<T, Unit> where T: Sync, Unit: Sync,`
+- `impl<T, Unit> Unpin for Length<T, Unit> where T: Unpin, Unit: Unpin,`
+- `impl<T, Unit> UnsafeUnpin for Length<T, Unit> where T: UnsafeUnpin,`
+- `impl<T, Unit> UnwindSafe for Length<T, Unit> where T: UnwindSafe, Unit: UnwindSafe,`
+## Blanket Implementations
+
+### `impl<T> Any for T where T: 'static + ?Sized,`
+
+#### `type_id`
+
+```rust
+fn type_id(&self) -> TypeId
+```
+
+Gets the `TypeId` of `self`. [Read more](https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id)
+
+### `impl<T> Borrow<T> for T where T: ?Sized,`
+
+#### `borrow`
+
+```rust
+fn borrow(&self) -> &T
+```
+
+Immutably borrows from an owned value. [Read more](https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow)
+
+### `impl<T> BorrowMut<T> for T where T: ?Sized,`
+
+#### `borrow_mut`
+
+```rust
+fn borrow_mut(&mut self) -> &mut T
+```
+
+Mutably borrows from an owned value. [Read more](https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut)
+
+### `impl<T> CloneToUninit for T where T: Clone,`
+
+#### `clone_to_uninit`
+
+```rust
+unsafe fn clone_to_uninit(&self, dest: *mut u8)
+```
+
+*🔬This is a nightly-only experimental API. (clone_to_uninit)*
+
+Performs copy-assignment from `self` to `dest`. [Read more](https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html#tymethod.clone_to_uninit)
+
+### `impl<Q, K> Comparable<K> for Q where Q: Ord + ?Sized, K: Borrow<Q> + ?Sized,`
+
+#### `compare`
+
+```rust
+fn compare(&self, key: &K) -> Ordering
+```
+
+Compare self to `key` and return their ordering.
+
+### `impl<T> Downcast<T> for T`
+
+#### `downcast`
+
+```rust
+fn downcast(&self) -> &T
+```
+
+### `impl<T> Downcast for T where T: Any,`
+
+#### `into_any`
+
+```rust
+fn into_any(self: Box<T>) -> Box<dyn Any>
+```
+
+Convert `Box<dyn Trait>` (where `Trait: Downcast`) to `Box<dyn Any>`. `Box<dyn Any>` can then be further `downcast` into `Box<ConcreteType>` where `ConcreteType` implements `Trait`.
+
+#### `into_any_rc`
+
+```rust
+fn into_any_rc(self: Rc<T>) -> Rc<dyn Any>
+```
+
+Convert `Rc<Trait>` (where `Trait: Downcast`) to `Rc<Any>`. `Rc<Any>` can then be further `downcast` into `Rc<ConcreteType>` where `ConcreteType` implements `Trait`.
+
+#### `as_any`
+
+```rust
+fn as_any(&self) -> &(dyn Any + 'static)
+```
+
+Convert `&Trait` (where `Trait: Downcast`) to `&Any`. This is needed since Rust cannot generate `&Any`’s vtable from `&Trait`’s.
+
+#### `as_any_mut`
+
+```rust
+fn as_any_mut(&mut self) -> &mut (dyn Any + 'static)
+```
+
+Convert `&mut Trait` (where `Trait: Downcast`) to `&Any`. This is needed since Rust cannot generate `&mut Any`’s vtable from `&mut Trait`’s.
+
+### `impl<T> DowncastSync for T where T: Any + Send + Sync,`
+
+#### `into_any_arc`
+
+```rust
+fn into_any_arc(self: Arc<T>) -> Arc<dyn Any + Sync + Send>
+```
+
+Convert `Arc<Trait>` (where `Trait: Downcast`) to `Arc<Any>`. `Arc<Any>` can then be further `downcast` into `Arc<ConcreteType>` where `ConcreteType` implements `Trait`.
+
+### `impl<Q, K> Equivalent<K> for Q where Q: Eq + ?Sized, K: Borrow<Q> + ?Sized,`
+
+#### `equivalent`
+
+```rust
+fn equivalent(&self, key: &K) -> bool
+```
+
+Checks if this value is equivalent to the given key. Read more
+
+### `impl<Q, K> Equivalent<K> for Q where Q: Eq + ?Sized, K: Borrow<Q> + ?Sized,`
+
+#### `equivalent`
+
+```rust
+fn equivalent(&self, key: &K) -> bool
+```
+
+Compare self to `key` and return `true` if they are equal.
+
+### `impl<T> From<T> for T`
+
+#### `from`
+
+```rust
+fn from(t: T) -> T
+```
+
+Returns the argument unchanged.
+
+### `impl<T> Instrument for T`
+
+#### `instrument`
+
+```rust
+fn instrument(self, span: Span) -> Instrumented<Self>
+```
+
+Instruments this type with the provided [`Span`], returning an `Instrumented` wrapper. Read more
+
+#### `in_current_span`
+
+```rust
+fn in_current_span(self) -> Instrumented<Self>
+```
+
+Instruments this type with the current `Span`, returning an `Instrumented` wrapper. Read more
+
+### `impl<T, U> Into<U> for T where U: From<T>,`
+
+#### `into`
+
+```rust
+fn into(self) -> U
+```
+
+Calls `U::from(self)`.
+
+That is, this conversion is whatever the implementation of `From<T> for U` chooses to do.
+
+### `impl<T> IntoEither for T`
+
+#### `into_either`
+
+```rust
+fn into_either(self, into_left: bool) -> Either<Self, Self>
+```
+
+Converts `self` into a [`Left`](https://docs.rs/either/1/either/enum.Either.html#variant.Left) variant of [`Either<Self, Self>`](https://docs.rs/either/1/either/enum.Either.html) if `into_left` is `true`. Converts `self` into a [`Right`](https://docs.rs/either/1/either/enum.Either.html#variant.Right) variant of [`Either<Self, Self>`](https://docs.rs/either/1/either/enum.Either.html) otherwise. [Read more](https://docs.rs/either/1/either/into_either/trait.IntoEither.html#method.into_either)
+
+#### `into_either_with`
+
+```rust
+fn into_either_with<F>(self, into_left: F) -> Either<Self, Self> where F: FnOnce(&Self) -> bool,
+```
+
+Converts `self` into a [`Left`](https://docs.rs/either/1/either/enum.Either.html#variant.Left) variant of [`Either<Self, Self>`](https://docs.rs/either/1/either/enum.Either.html) if `into_left(&self)` returns `true`. Converts `self` into a [`Right`](https://docs.rs/either/1/either/enum.Either.html#variant.Right) variant of [`Either<Self, Self>`](https://docs.rs/either/1/either/enum.Either.html) otherwise. [Read more](https://docs.rs/either/1/either/into_either/trait.IntoEither.html#method.into_either_with)
+
+### `impl<T> Pointable for T`
+
+#### `ALIGN`
+
+```rust
+const ALIGN: usize
+```
+
+The alignment of pointer.
+
+#### `Init`
+
+```rust
+type Init = T
+```
+
+The type for initializers.
+
+#### `init`
+
+```rust
+unsafe fn init(init: <T as Pointable>::Init) -> usize
+```
+
+Initializes a with the given initializer. Read more
+
+#### `deref`
+
+```rust
+unsafe fn deref<'a>(ptr: usize) -> &'a T
+```
+
+Dereferences the given pointer. Read more
+
+#### `deref_mut`
+
+```rust
+unsafe fn deref_mut<'a>(ptr: usize) -> &'a mut T
+```
+
+Mutably dereferences the given pointer. Read more
+
+#### `drop`
+
+```rust
+unsafe fn drop(ptr: usize)
+```
+
+Drops the object pointed to by the given pointer. Read more
+
+### `impl<R, P> ReadPrimitive<R> for P where R: Read + ReadEndian<P>, P: Default,`
+
+#### `read_from_little_endian`
+
+```rust
+fn read_from_little_endian(read: &mut R) -> Result<Self, Error>
+```
+
+Read this value from the supplied reader. Same as `ReadEndian::read_from_little_endian()`.
+
+#### `read_from_big_endian`
+
+```rust
+fn read_from_big_endian(read: &mut R) -> Result<Self, Error>
+```
+
+Read this value from the supplied reader. Same as `ReadEndian::read_from_big_endian()`.
+
+#### `read_from_native_endian`
+
+```rust
+fn read_from_native_endian(read: &mut R) -> Result<Self, Error>
+```
+
+Read this value from the supplied reader. Same as `ReadEndian::read_from_native_endian()`.
+
+### `impl<T> ToOwned for T where T: Clone,`
+
+#### `Owned`
+
+```rust
+type Owned = T
+```
+
+The resulting type after obtaining ownership.
+
+#### `to_owned`
+
+```rust
+fn to_owned(&self) -> T
+```
+
+Creates owned data from borrowed data, usually by cloning. [Read more](https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#tymethod.to_owned)
+
+#### `clone_into`
+
+```rust
+fn clone_into(&self, target: &mut T)
+```
+
+Uses borrowed data to replace owned data, usually by cloning. [Read more](https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#method.clone_into)
+
+### `impl<T, U> TryFrom<U> for T where U: Into<T>,`
+
+#### `Error`
+
+```rust
+type Error = Infallible
+```
+
+The type returned in the event of a conversion error.
+
+#### `try_from`
+
+```rust
+fn try_from(value: U) -> Result<T, <T as TryFrom<U>>::Error>
+```
+
+Performs the conversion.
+
+### `impl<T, U> TryInto<U> for T where U: TryFrom<T>,`
+
+#### `Error`
+
+```rust
+type Error = <U as TryFrom<T>>::Error
+```
+
+The type returned in the event of a conversion error.
+
+#### `try_into`
+
+```rust
+fn try_into(self) -> Result<U, <U as TryFrom<T>>::Error>
+```
+
+Performs the conversion.
+
+### `impl<T> Upcast<T> for T`
+
+#### `upcast`
+
+```rust
+fn upcast(&self) -> Option<&T>
+```
+
+### `impl<T> WithSubscriber for T`
+
+#### `with_subscriber`
+
+```rust
+fn with_subscriber<S>(self, subscriber: S) -> WithDispatch<Self> where S: Into<Dispatch>,
+```
+
+Attaches the provided `Subscriber` to this type, returning a [`WithDispatch`] wrapper. Read more
+
+#### `with_current_subscriber`
+
+```rust
+fn with_current_subscriber(self) -> WithDispatch<Self>
+```
+
+Attaches the current default `Subscriber` to this type, returning a [`WithDispatch`] wrapper. Read more
+
+### `impl<ST, DT> CastableFrom<ST, Initialized, Initialized> for DT where ST: ?Sized, DT: ?Sized,`
+
+### `impl<ST, DT> CastableFrom<ST, Uninit, Uninit> for DT where ST: ?Sized, DT: ?Sized,`
+
+### `impl<T> MaybeSend for T where T: Send,`
+
+### `impl<T> MaybeSync for T where T: Sync,`
+
+### `impl<T> Read<Exclusive, BecauseExclusive> for T where T: ?Sized,`
+
+### `impl<T> WasmNotSend for T where T: Send,`
+
+### `impl<T> WasmNotSendSync for T where T: WasmNotSend + WasmNotSync,`
+
+### `impl<T> WasmNotSync for T where T: Sync,`

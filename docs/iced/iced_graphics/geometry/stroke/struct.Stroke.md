@@ -1,0 +1,370 @@
+---
+title: "Stroke"
+kind: struct
+path: "iced_graphics::geometry::stroke::Stroke"
+crate: "iced_graphics"
+module: "iced_graphics::geometry::stroke"
+file: "iced_graphics/geometry/stroke/struct.Stroke.md"
+docs_url: "https://docs.iced.rs/iced_graphics/geometry/stroke/struct.Stroke.html"
+source_file: "src/iced_graphics/geometry/stroke.rs"
+source_lines: "10-24"
+---
+
+# `iced_graphics::geometry::stroke::Stroke`
+
+```rust
+pub struct Stroke<'a> {
+    pub style: Style,
+    pub width: f32,
+    pub line_cap: LineCap,
+    pub line_join: LineJoin,
+    pub line_dash: LineDash<'a>,
+}
+```
+
+The style of a stroke.
+
+**Source:** [stroke.rs](../../../src/iced_graphics/geometry/stroke.rs.md) (lines 10-24)
+
+## Fields
+
+### `style: Style`
+
+The color or gradient of the stroke.
+
+By default, it is set to a [`Style::Solid`](../enum.Style.md) with [`Color::BLACK`].
+
+### `width: f32`
+
+The distance between the two edges of the stroke.
+
+### `line_cap: LineCap`
+
+The shape to be used at the end of open subpaths when they are stroked.
+
+### `line_join: LineJoin`
+
+The shape to be used at the corners of paths or basic shapes when they are stroked.
+
+### `line_dash: LineDash<'a>`
+
+The dash pattern used when stroking the line.
+
+## Methods
+
+### `impl Stroke<'_>`
+
+#### `with_color`
+
+```rust
+pub fn with_color(self, color: Color) -> Self
+```
+
+Sets the color of the [`Stroke`](struct.Stroke.md).
+
+#### `with_width`
+
+```rust
+pub fn with_width(self, width: f32) -> Self
+```
+
+Sets the width of the [`Stroke`](struct.Stroke.md).
+
+#### `with_line_cap`
+
+```rust
+pub fn with_line_cap(self, line_cap: LineCap) -> Self
+```
+
+Sets the [`LineCap`](enum.LineCap.md) of the [`Stroke`](struct.Stroke.md).
+
+#### `with_line_join`
+
+```rust
+pub fn with_line_join(self, line_join: LineJoin) -> Self
+```
+
+Sets the [`LineJoin`](enum.LineJoin.md) of the [`Stroke`](struct.Stroke.md).
+
+## Trait Implementations
+
+### `impl<'a> Clone for Stroke<'a>`
+
+#### `clone`
+
+```rust
+fn clone(&self) -> Stroke<'a>
+```
+
+Returns a duplicate of the value. [Read more](https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone)
+
+#### `clone_from`
+
+```rust
+fn clone_from(&mut self, source: &Self)
+```
+
+Performs copy-assignment from `source`. [Read more](https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from)
+
+### `impl<'a> Debug for Stroke<'a>`
+
+#### `fmt`
+
+```rust
+fn fmt(&self, f: &mut Formatter<'_>) -> Result
+```
+
+Formats the value using the given formatter. [Read more](https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt)
+
+### `impl Default for Stroke<'_>`
+
+#### `default`
+
+```rust
+fn default() -> Self
+```
+
+Returns the “default value” for a type. [Read more](https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default)
+
+### `impl<'a> Copy for Stroke<'a>`
+
+## Auto Trait Implementations
+
+- `impl<'a> Freeze for Stroke<'a>`
+- `impl<'a> RefUnwindSafe for Stroke<'a>`
+- `impl<'a> Send for Stroke<'a>`
+- `impl<'a> Sync for Stroke<'a>`
+- `impl<'a> Unpin for Stroke<'a>`
+- `impl<'a> UnsafeUnpin for Stroke<'a>`
+- `impl<'a> UnwindSafe for Stroke<'a>`
+## Blanket Implementations
+
+### `impl<T> Any for T where T: 'static + ?Sized,`
+
+#### `type_id`
+
+```rust
+fn type_id(&self) -> TypeId
+```
+
+Gets the `TypeId` of `self`. [Read more](https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id)
+
+### `impl<T> Borrow<T> for T where T: ?Sized,`
+
+#### `borrow`
+
+```rust
+fn borrow(&self) -> &T
+```
+
+Immutably borrows from an owned value. [Read more](https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow)
+
+### `impl<T> BorrowMut<T> for T where T: ?Sized,`
+
+#### `borrow_mut`
+
+```rust
+fn borrow_mut(&mut self) -> &mut T
+```
+
+Mutably borrows from an owned value. [Read more](https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut)
+
+### `impl<T> CloneToUninit for T where T: Clone,`
+
+#### `clone_to_uninit`
+
+```rust
+unsafe fn clone_to_uninit(&self, dest: *mut u8)
+```
+
+*🔬This is a nightly-only experimental API. (clone_to_uninit)*
+
+Performs copy-assignment from `self` to `dest`. [Read more](https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html#tymethod.clone_to_uninit)
+
+### `impl<T> From<T> for T`
+
+#### `from`
+
+```rust
+fn from(t: T) -> T
+```
+
+Returns the argument unchanged.
+
+### `impl<T, U> Into<U> for T where U: From<T>,`
+
+#### `into`
+
+```rust
+fn into(self) -> U
+```
+
+Calls `U::from(self)`.
+
+That is, this conversion is whatever the implementation of `From<T> for U` chooses to do.
+
+### `impl<T> IntoEither for T`
+
+#### `into_either`
+
+```rust
+fn into_either(self, into_left: bool) -> Either<Self, Self>
+```
+
+Converts `self` into a [`Left`](https://docs.rs/either/1/either/enum.Either.html#variant.Left) variant of [`Either<Self, Self>`](https://docs.rs/either/1/either/enum.Either.html) if `into_left` is `true`. Converts `self` into a [`Right`](https://docs.rs/either/1/either/enum.Either.html#variant.Right) variant of [`Either<Self, Self>`](https://docs.rs/either/1/either/enum.Either.html) otherwise. [Read more](https://docs.rs/either/1/either/into_either/trait.IntoEither.html#method.into_either)
+
+#### `into_either_with`
+
+```rust
+fn into_either_with<F>(self, into_left: F) -> Either<Self, Self> where F: FnOnce(&Self) -> bool,
+```
+
+Converts `self` into a [`Left`](https://docs.rs/either/1/either/enum.Either.html#variant.Left) variant of [`Either<Self, Self>`](https://docs.rs/either/1/either/enum.Either.html) if `into_left(&self)` returns `true`. Converts `self` into a [`Right`](https://docs.rs/either/1/either/enum.Either.html#variant.Right) variant of [`Either<Self, Self>`](https://docs.rs/either/1/either/enum.Either.html) otherwise. [Read more](https://docs.rs/either/1/either/into_either/trait.IntoEither.html#method.into_either_with)
+
+### `impl<T> Pointable for T`
+
+#### `ALIGN`
+
+```rust
+const ALIGN: usize
+```
+
+The alignment of pointer.
+
+#### `Init`
+
+```rust
+type Init = T
+```
+
+The type for initializers.
+
+#### `init`
+
+```rust
+unsafe fn init(init: <T as Pointable>::Init) -> usize
+```
+
+Initializes a with the given initializer. Read more
+
+#### `deref`
+
+```rust
+unsafe fn deref<'a>(ptr: usize) -> &'a T
+```
+
+Dereferences the given pointer. Read more
+
+#### `deref_mut`
+
+```rust
+unsafe fn deref_mut<'a>(ptr: usize) -> &'a mut T
+```
+
+Mutably dereferences the given pointer. Read more
+
+#### `drop`
+
+```rust
+unsafe fn drop(ptr: usize)
+```
+
+Drops the object pointed to by the given pointer. Read more
+
+### `impl<R, P> ReadPrimitive<R> for P where R: Read + ReadEndian<P>, P: Default,`
+
+#### `read_from_little_endian`
+
+```rust
+fn read_from_little_endian(read: &mut R) -> Result<Self, Error>
+```
+
+Read this value from the supplied reader. Same as `ReadEndian::read_from_little_endian()`.
+
+#### `read_from_big_endian`
+
+```rust
+fn read_from_big_endian(read: &mut R) -> Result<Self, Error>
+```
+
+Read this value from the supplied reader. Same as `ReadEndian::read_from_big_endian()`.
+
+#### `read_from_native_endian`
+
+```rust
+fn read_from_native_endian(read: &mut R) -> Result<Self, Error>
+```
+
+Read this value from the supplied reader. Same as `ReadEndian::read_from_native_endian()`.
+
+### `impl<T> ToOwned for T where T: Clone,`
+
+#### `Owned`
+
+```rust
+type Owned = T
+```
+
+The resulting type after obtaining ownership.
+
+#### `to_owned`
+
+```rust
+fn to_owned(&self) -> T
+```
+
+Creates owned data from borrowed data, usually by cloning. [Read more](https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#tymethod.to_owned)
+
+#### `clone_into`
+
+```rust
+fn clone_into(&self, target: &mut T)
+```
+
+Uses borrowed data to replace owned data, usually by cloning. [Read more](https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#method.clone_into)
+
+### `impl<T, U> TryFrom<U> for T where U: Into<T>,`
+
+#### `Error`
+
+```rust
+type Error = Infallible
+```
+
+The type returned in the event of a conversion error.
+
+#### `try_from`
+
+```rust
+fn try_from(value: U) -> Result<T, <T as TryFrom<U>>::Error>
+```
+
+Performs the conversion.
+
+### `impl<T, U> TryInto<U> for T where U: TryFrom<T>,`
+
+#### `Error`
+
+```rust
+type Error = <U as TryFrom<T>>::Error
+```
+
+The type returned in the event of a conversion error.
+
+#### `try_into`
+
+```rust
+fn try_into(self) -> Result<U, <U as TryFrom<T>>::Error>
+```
+
+Performs the conversion.
+
+### `impl<ST, DT> CastableFrom<ST, Initialized, Initialized> for DT where ST: ?Sized, DT: ?Sized,`
+
+### `impl<ST, DT> CastableFrom<ST, Uninit, Uninit> for DT where ST: ?Sized, DT: ?Sized,`
+
+### `impl<T> MaybeSend for T where T: Send,`
+
+### `impl<T> MaybeSync for T where T: Sync,`
+
+### `impl<T> Read<Exclusive, BecauseExclusive> for T where T: ?Sized,`

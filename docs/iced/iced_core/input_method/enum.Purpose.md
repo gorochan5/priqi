@@ -1,0 +1,242 @@
+---
+title: "Purpose"
+kind: enum
+path: "iced_core::input_method::Purpose"
+crate: "iced_core"
+module: "iced_core::input_method"
+file: "iced_core/input_method/enum.Purpose.md"
+docs_url: "https://docs.iced.rs/iced_core/input_method/enum.Purpose.html"
+source_file: "src/iced_core/input_method.rs"
+source_lines: "74-84"
+---
+
+# `iced_core::input_method::Purpose`
+
+```rust
+pub enum Purpose {
+    Normal,
+    Secure,
+    Terminal,
+}
+```
+
+The purpose of an [`InputMethod`](enum.InputMethod.md).
+
+**Source:** [input_method.rs](../../src/iced_core/input_method.rs.md) (lines 74-84)
+
+## Variants
+
+### `Normal`
+
+No special hints for the IME (default).
+
+### `Secure`
+
+The IME is used for secure input (e.g. passwords).
+
+### `Terminal`
+
+The IME is used to input into a terminal.
+
+For example, that could alter OSK on Wayland to show extra buttons.
+
+## Trait Implementations
+
+### `impl Clone for Purpose`
+
+#### `clone`
+
+```rust
+fn clone(&self) -> Purpose
+```
+
+Returns a duplicate of the value. [Read more](https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone)
+
+#### `clone_from`
+
+```rust
+fn clone_from(&mut self, source: &Self)
+```
+
+Performs copy-assignment from `source`. [Read more](https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from)
+
+### `impl Debug for Purpose`
+
+#### `fmt`
+
+```rust
+fn fmt(&self, f: &mut Formatter<'_>) -> Result
+```
+
+Formats the value using the given formatter. [Read more](https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt)
+
+### `impl Default for Purpose`
+
+#### `default`
+
+```rust
+fn default() -> Purpose
+```
+
+Returns the “default value” for a type. [Read more](https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default)
+
+### `impl PartialEq for Purpose`
+
+#### `eq`
+
+```rust
+fn eq(&self, other: &Purpose) -> bool
+```
+
+Tests for `self` and `other` values to be equal, and is used by `==`.
+
+#### `ne`
+
+```rust
+fn ne(&self, other: &Rhs) -> bool
+```
+
+Tests for `!=`. The default implementation is almost always sufficient, and should not be overridden without very good reason.
+
+### `impl Copy for Purpose`
+
+### `impl Eq for Purpose`
+
+### `impl StructuralPartialEq for Purpose`
+
+## Auto Trait Implementations
+
+- `impl Freeze for Purpose`
+- `impl RefUnwindSafe for Purpose`
+- `impl Send for Purpose`
+- `impl Sync for Purpose`
+- `impl Unpin for Purpose`
+- `impl UnsafeUnpin for Purpose`
+- `impl UnwindSafe for Purpose`
+## Blanket Implementations
+
+### `impl<T> Any for T where T: 'static + ?Sized,`
+
+#### `type_id`
+
+```rust
+fn type_id(&self) -> TypeId
+```
+
+Gets the `TypeId` of `self`. [Read more](https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id)
+
+### `impl<T> Borrow<T> for T where T: ?Sized,`
+
+#### `borrow`
+
+```rust
+fn borrow(&self) -> &T
+```
+
+Immutably borrows from an owned value. [Read more](https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow)
+
+### `impl<T> BorrowMut<T> for T where T: ?Sized,`
+
+#### `borrow_mut`
+
+```rust
+fn borrow_mut(&mut self) -> &mut T
+```
+
+Mutably borrows from an owned value. [Read more](https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut)
+
+### `impl<T> CloneToUninit for T where T: Clone,`
+
+#### `clone_to_uninit`
+
+```rust
+unsafe fn clone_to_uninit(&self, dest: *mut u8)
+```
+
+*🔬This is a nightly-only experimental API. (clone_to_uninit)*
+
+Performs copy-assignment from `self` to `dest`. [Read more](https://doc.rust-lang.org/nightly/core/clone/trait.CloneToUninit.html#tymethod.clone_to_uninit)
+
+### `impl<T> From<T> for T`
+
+#### `from`
+
+```rust
+fn from(t: T) -> T
+```
+
+Returns the argument unchanged.
+
+### `impl<T, U> Into<U> for T where U: From<T>,`
+
+#### `into`
+
+```rust
+fn into(self) -> U
+```
+
+Calls `U::from(self)`.
+
+That is, this conversion is whatever the implementation of `From<T> for U` chooses to do.
+
+### `impl<T> ToOwned for T where T: Clone,`
+
+#### `Owned`
+
+```rust
+type Owned = T
+```
+
+The resulting type after obtaining ownership.
+
+#### `to_owned`
+
+```rust
+fn to_owned(&self) -> T
+```
+
+Creates owned data from borrowed data, usually by cloning. [Read more](https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#tymethod.to_owned)
+
+#### `clone_into`
+
+```rust
+fn clone_into(&self, target: &mut T)
+```
+
+Uses borrowed data to replace owned data, usually by cloning. [Read more](https://doc.rust-lang.org/nightly/alloc/borrow/trait.ToOwned.html#method.clone_into)
+
+### `impl<T, U> TryFrom<U> for T where U: Into<T>,`
+
+#### `Error`
+
+```rust
+type Error = Infallible
+```
+
+The type returned in the event of a conversion error.
+
+#### `try_from`
+
+```rust
+fn try_from(value: U) -> Result<T, <T as TryFrom<U>>::Error>
+```
+
+Performs the conversion.
+
+### `impl<T, U> TryInto<U> for T where U: TryFrom<T>,`
+
+#### `Error`
+
+```rust
+type Error = <U as TryFrom<T>>::Error
+```
+
+The type returned in the event of a conversion error.
+
+#### `try_into`
+
+```rust
+fn try_into(self) -> Result<U, <U as TryFrom<T>>::Error>
+```
+
+Performs the conversion.

@@ -1,0 +1,36 @@
+# iced documentation
+
+> Structured Markdown mirror of the iced Rust GUI library documentation (version 0.15.0-dev, upstream commit cd04b74ca7073766f654535d6e72c452ef749d07). Converted from https://docs.iced.rs/iced/ with one file per item, exact signatures and relative links.
+
+## Start here
+
+- [iced](iced/index.md): iced is a cross-platform GUI library focused on simplicity and type-safety. Inspired by Elm.
+- [iced::widget](iced/widget/index.md): Use the built-in widgets or create your own.
+- [iced::application](iced/application/index.md): Create and run iced applications step by step.
+- [Full index](index.md): table of contents for every crate and module.
+- [Complete bundle](llms-full.txt): every documentation page in one file.
+
+## Crates
+
+- [futures_core](futures_core/index.md): Core traits and types for asynchronous operations in Rust. (3 modules, 12 items)
+- [iced](iced/index.md): iced is a cross-platform GUI library focused on simplicity and type-safety. Inspired by Elm. (135 modules, 303 items)
+- [iced_beacon](iced_beacon/index.md): API documentation for the Rust `iced_beacon` crate. (3 modules, 17 items)
+- [iced_core](iced_core/index.md): The core library of Iced. (45 modules, 337 items)
+- [iced_debug](iced_debug/index.md): API documentation for the Rust `iced_debug` crate. (0 modules, 29 items)
+- [iced_devtools](iced_devtools/index.md): API documentation for the Rust `iced_devtools` crate. (0 modules, 6 items)
+- [iced_futures](iced_futures/index.md): Asynchronous tasks for GUI programming, inspired by Elm. (16 modules, 41 items)
+- [iced_graphics](iced_graphics/index.md): A bunch of backend-agnostic types that can be leveraged to build a renderer for `iced`. (19 modules, 86 items)
+- [iced_highlighter](iced_highlighter/index.md): A syntax highlighter for iced. (0 modules, 5 items)
+- [iced_renderer](iced_renderer/index.md): The official renderer for iced. (30 modules, 188 items)
+- [iced_runtime](iced_runtime/index.md): A renderer-agnostic native GUI runtime. (16 modules, 100 items)
+- [iced_test](iced_test/index.md): Test your `iced` applications in headless mode. (4 modules, 30 items)
+- [iced_tiny_skia](iced_tiny_skia/index.md): API documentation for the Rust `iced_tiny_skia` crate. (3 modules, 17 items)
+- [iced_wgpu](iced_wgpu/index.md): A `wgpu` renderer for Iced. (5 modules, 22 items)
+- [iced_widget](iced_widget/index.md): Use the built-in widgets or create your own. (69 modules, 424 items)
+- [iced_winit](iced_winit/index.md): A windowing shell for Iced, on top of `winit`. (2 modules, 32 items)
+
+## Conventions
+
+- Paths are `crate::module::Item`; files mirror rustdoc names.
+- Frontmatter carries `kind`, `path`, `module`, `source_file`, `docs_url`.
+- Use `index.md` files for discovery and item pages for details.
