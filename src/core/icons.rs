@@ -28,6 +28,10 @@ pub fn x<'a>() -> Text<'a> {
     icon('\u{e1b2}')
 }
 
+pub fn printer<'a>() -> Text<'a> {
+    icon('\u{e141}')
+}
+
 pub fn branding() -> Image {
     image(Handle::from_bytes(&include_bytes!("../../resources/branding.png")[..]))
 }
