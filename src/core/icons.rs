@@ -3,7 +3,8 @@
 //! Codepoints come from `resources/lucide/lucide.css` (same version as the `.ttf`).
 
 use iced::Font;
-use iced::widget::{Text, text};
+use iced::widget::image::{Handle, Image};
+use iced::widget::{Text, image, text};
 
 /// Raw bytes of the Lucide font, embedded in the binary.
 pub const FONT_BYTES: &[u8] = include_bytes!("../../resources/lucide/lucide.ttf");
@@ -27,3 +28,6 @@ pub fn x<'a>() -> Text<'a> {
     icon('\u{e1b2}')
 }
 
+pub fn branding() -> Image {
+    image(Handle::from_bytes(&include_bytes!("../../resources/branding.png")[..]))
+}

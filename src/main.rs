@@ -8,6 +8,7 @@ pub fn main() -> iced::Result {
         .window(iced::window::Settings {
             maximized: true,
             resizable: true,
+            decorations: false,
             ..Default::default()
         })
         .fonts([core::icons::FONT_BYTES])
