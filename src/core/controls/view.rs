@@ -1,40 +1,47 @@
-use iced::Length;
-use iced::Shadow;
-use iced::Vector;
-use iced::Widget;
-use iced::border;
-use iced::color;
-use iced::widget::container;
+use iced::widget::{column, container, row};
+use iced::{Length, Shadow, Vector, Widget, alignment, border, color};
 
-use crate::core::controls::models::Message;
+use crate::core::controls::models::{Message, State};
+use crate::core::controls::widgets::copies_slider::copies_slider;
+use crate::core::controls::widgets::print_button::print_button;
+use crate::core::controls::widgets::printers_dropdown::printers_dropdown;
+use crate::core::controls::widgets::toggle_button::toggle_button;
 
-
-
-pub fn view(_state: &()) -> impl Widget<Message> {
-    controls(_state)
+pub fn view(state: &State) -> impl Widget<Message> {
+    controls(state)
 }
 
-fn controls(_state: &()) -> impl Widget<Message> {
-    container(
-        crate::core::controls::printers::view::view(_state).map(Message::Printers),
-    )
-    .width(Length::Fill)
-    .height(Length::Fixed(96.0))
-    .padding(5)
-    .style(
-        |_theme| {
+fn controls(state: &State) -> impl Widget<Message> {
+    let mut content = column![toggle_button(state)]
+        .align_x(alignment::Horizontal::Center)
+        .width(Length::Shrink);
+
+    if !state.collapsed {
+        let card = container(
+            column![
+                row![printers_dropdown(state), copies_slider(state),]
+                    .spacing(100)
+                    .align_y(alignment::Vertical::Center),
+                print_button(state),
+            ]
+            .spacing(10)
+            .width(Length::Shrink),
+        )
+        .padding(10)
+        .width(Length::Shrink)
+        .style(|_theme| {
             container::Style::default()
-            .background(color!(0xfefefe))
-            .border(
-                border::rounded(10)
-                .color(color!(0xeaeaea))
-                .width(1.5),
-            )
-            .shadow(Shadow {
-                offset: Vector::new(0.0, 2.0),
-                blur_radius: 5.0,
-                color: color!(0x000000, 0.1),
-            })
-        }
-    )
+                .background(color!(0xfefefe))
+                .border(border::rounded(10).color(color!(0xeaeaea)).width(1.5))
+                .shadow(Shadow {
+                    offset: Vector::new(0.0, 2.0),
+                    blur_radius: 5.0,
+                    color: color!(0x000000, 0.1),
+                })
+        });
+
+        content = content.push(card.boxed());
+    }
+
+    container(content).center_x(Length::Fill)
 }

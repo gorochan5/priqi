@@ -16,22 +16,15 @@ pub fn view(_state: &()) -> impl Widget<Message> {
 }
 
 fn navbar(_state: &()) -> impl Widget<Message> {
-    container(
+    container(row![
+        widgets::branding::render(_state),
+        mouse_area(space().width(Length::Fill).height(Length::Fill)).on_press(Message::Drag),
         row![
-            widgets::branding::render(_state),
-            mouse_area(
-                space()
-                    .width(Length::Fill)
-                    .height(Length::Fill)
-                )
-                .on_press(Message::Drag),
-            row![
-                widgets::minimize::render(_state),
-                widgets::maximize::render(_state),
-                widgets::exit::render(_state),
-            ]
+            widgets::minimize::render(_state),
+            widgets::maximize::render(_state),
+            widgets::exit::render(_state),
         ]
-    )
+    ])
     .width(Length::Fill)
     .height(Length::Fixed(48.0))
     .style(|_theme| container::background(color!(0xffffff)))

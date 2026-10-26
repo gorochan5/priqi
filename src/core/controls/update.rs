@@ -1,10 +1,22 @@
-use iced::{Task, window};
+use iced::Task;
 
-use crate::core::controls::models::Message;
+use crate::core::controls::models::{Message, State};
 
-pub fn update(state: &mut (), message: Message) -> Task<Message>{
+pub fn update(state: &mut State, message: Message) -> Task<Message> {
     match message {
-        Message::Printers(msg) => crate::core::controls::printers::update::update(state, msg).map(Message::Printers),
+        Message::PrinterSelected(printer) => {
+            state.printer = Some(printer);
+            Task::none()
+        }
+        Message::CopiesChanged(copies) => {
+            state.copies = copies;
+            Task::none()
+        }
+        Message::PrintPressed => Task::none(),
+        Message::ToggleCollapse => {
+            state.collapsed = !state.collapsed;
+            Task::none()
+        }
         Message::Nothing => Task::none(),
     }
 }

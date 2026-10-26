@@ -1,5 +1,5 @@
-use iced::{Length, Widget, color, widget::button};
 use crate::core::{icons, navbar::models::Message};
+use iced::{Length, Widget, color, widget::button};
 
 pub fn render<'a>(_state: &()) -> impl Widget<Message> + 'a {
     button(icons::minus().size(24))

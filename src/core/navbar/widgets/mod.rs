@@ -1,5 +1,5 @@
 pub mod branding;
-pub mod minimize;
-pub mod maximize;
 pub mod exit;
+pub mod maximize;
+pub mod minimize;
 pub mod version;
