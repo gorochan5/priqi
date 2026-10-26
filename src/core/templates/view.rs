@@ -4,7 +4,7 @@ use iced::widget::space;
 use iced::{Length, Shadow, Vector, Widget, border, color};
 
 use crate::core::templates::models::{Message, State};
-use crate::core::icons::qr_code;
+use crate::core::icons::{qr_code, arrow_down_to_line};
 
 pub fn view(state: &State) -> impl Widget<Message> {
     templates(state)
@@ -19,7 +19,10 @@ fn templates(state: &State) -> impl Widget<Message> {
                 column![
                     text("").size(5),
                     text("TEMPLATES").size(14).color(color!(0x64748b)),
-                ]
+                    ],
+                space().width(Length::Fill),
+                arrow_down_to_line().size(24).color(color!(0x07bc9f)),
+                
             ],
             rule::horizontal(1).style(|_theme| rule::Style {
                 color: color!(0xeaeaea),
