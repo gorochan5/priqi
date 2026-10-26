@@ -13,6 +13,12 @@ pub fn update(state: &mut State, message: Message) -> Task<Message> {
         Message::Editor(msg) => {
             crate::core::editor::update::update(&mut state.editor, msg).map(Message::Editor)
         }
+        Message::Templates(msg) => {
+            crate::core::templates::update::update(&mut state.templates, msg).map(Message::Templates)
+        }
+        Message::Datasets(msg) => {
+            crate::core::datasets::update::update(&mut state.datasets, msg).map(Message::Datasets)
+        }
         Message::Nothing => Task::none(),
     }
 }

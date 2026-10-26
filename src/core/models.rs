@@ -1,8 +1,10 @@
 #[derive(Default)]
 pub struct State {
-    pub controls: crate::core::controls::models::State,
     pub navbar: (),
+    pub controls: crate::core::controls::models::State,
     pub editor: crate::core::editor::models::State,
+    pub templates: crate::core::templates::models::State,
+    pub datasets: crate::core::datasets::models::State,
 }
 
 #[derive(Debug, Clone)]
@@ -11,4 +13,6 @@ pub enum Message {
     Navbar(crate::core::navbar::models::Message),
     Controls(crate::core::controls::models::Message),
     Editor(crate::core::editor::models::Message),
+    Templates(crate::core::templates::models::Message),
+    Datasets(crate::core::datasets::models::Message),
 }

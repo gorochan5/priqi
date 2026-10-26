@@ -1,4 +1,4 @@
-use iced::widget::{column, container, row};
+use iced::widget::{bottom_center, column, container, opaque, row};
 use iced::{Length, Shadow, Vector, Widget, alignment, border, color};
 
 use crate::core::controls::models::{Message, State};
@@ -40,8 +40,8 @@ fn controls(state: &State) -> impl Widget<Message> {
                 })
         });
 
-        content = content.push(card.boxed());
+        content = content.push(opaque(card).boxed());
     }
 
-    container(content).center_x(Length::Fill)
+    bottom_center(content)
 }

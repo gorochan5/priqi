@@ -43,7 +43,7 @@ fn editor(state: &State) -> impl Widget<Message> {
             .width(Length::Fill)
             .height(Length::Fill)
         )
-        .width(Length::Fill)
+        .width(Length::FillPortion(60))
         .height(Length::Fill)
         .padding(5)
         .style(|_theme| {
