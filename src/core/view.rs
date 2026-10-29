@@ -37,5 +37,9 @@ fn app(state: &State) -> impl Widget<Message> {
         ]
         .width(Length::Fill)
         .height(Length::Fill),
+        state
+            .templates
+            .show_upload_modal
+            .then(|| crate::core::templates::widgets::upload_popup::upload_modal(&state.templates).map(Message::Templates)),
     ]
 }

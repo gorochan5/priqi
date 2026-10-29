@@ -16,6 +16,6 @@ tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["json", "env-filter", "local-time", "fmt"] }
 
 [profile.dev]
-incremental = false
-codegen-units = 1
+incremental = true
+codegen-units = 28
 

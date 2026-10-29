@@ -9,7 +9,7 @@ use iced::widget::{text, text_editor};
 use crate::core::editor::code::widgets::highlighter::{ZplParser, zpl_highlight};
 use crate::core::editor::models::{Message, State};
 
-pub fn code_input(state: &State) -> impl Widget<Message> + '_ {
+pub fn code_input(state: &State, min_height: f32) -> impl Widget<Message> + '_ {
     text_editor(&state.content)
         .placeholder("Digite o código ZPL aqui...")
         .on_action(Message::Edit)
@@ -18,7 +18,7 @@ pub fn code_input(state: &State) -> impl Widget<Message> + '_ {
         .line_height(1.5)
         .padding(10)
         .wrapping(text::Wrapping::None)
-        .height(Length::Shrink)
+        .height(Length::Shrink.min(min_height))
         .highlight_with::<ZplParser>((), zpl_highlight)
         .style(|_theme, _status| text_editor::Style {
             background: Background::Color(color!(0x262820)),

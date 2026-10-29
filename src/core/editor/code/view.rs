@@ -3,7 +3,7 @@ use iced::Widget;
 use iced::alignment;
 use iced::border;
 use iced::color;
-use iced::widget::{container, row, scrollable};
+use iced::widget::{container, responsive, row, scrollable};
 
 use crate::core::editor::code::widgets::code_input::code_input;
 use crate::core::editor::code::widgets::line_numbers::line_numbers;
@@ -14,15 +14,19 @@ pub fn view(state: &State) -> impl Widget<Message> + '_ {
 }
 
 fn code(state: &State) -> impl Widget<Message> + '_ {
-    container(
+    container(responsive(move |size| {
         scrollable(
-            row![line_numbers(state), code_input(state)]
-                .width(Length::Fill)
-                .align_y(alignment::Vertical::Top),
+            row![
+                line_numbers(state),
+                code_input(state, size.height)
+            ]
+            .width(Length::Fill)
+            .height(Length::Shrink.min(size.height))
+            .align_y(alignment::Vertical::Top),
         )
         .width(Length::Fill)
-        .height(Length::Fill),
-    )
+        .height(Length::Fill)
+    }))
     .width(Length::Fill)
     .height(Length::Fill)
     .style(|_theme| {
