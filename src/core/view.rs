@@ -19,6 +19,7 @@ fn app(state: &State) -> impl Widget<Message> {
             crate::core::navbar::view::view(&state.navbar).map(Message::Navbar),
             space().height(Length::Fixed(10.0)),
             row![
+                space().width(Length::Fixed(10.0)),
                 crate::core::datasets::view::view(&state.datasets).map(Message::Datasets),
                 space().width(Length::Fixed(10.0)),
                 crate::core::editor::view::view(&state.editor).map(Message::Editor),
@@ -39,7 +40,27 @@ fn app(state: &State) -> impl Widget<Message> {
         .height(Length::Fill),
         state
             .templates
-            .show_upload_modal
-            .then(|| crate::core::templates::widgets::upload_popup::upload_modal(&state.templates).map(Message::Templates)),
+            .import_modal
+            .is_open
+            .then(|| {
+                crate::core::widgets::import_modal::view(
+                    &state.templates.import_modal,
+                    crate::core::widgets::import_modal::ImportConfig::templates(),
+                )
+                .map(crate::core::templates::models::Message::ImportModal)
+                .map(Message::Templates)
+            }),
+        state
+            .datasets
+            .import_modal
+            .is_open
+            .then(|| {
+                crate::core::widgets::import_modal::view(
+                    &state.datasets.import_modal,
+                    crate::core::widgets::import_modal::ImportConfig::datasets(),
+                )
+                .map(crate::core::datasets::models::Message::ImportModal)
+                .map(Message::Datasets)
+            }),
     ]
 }

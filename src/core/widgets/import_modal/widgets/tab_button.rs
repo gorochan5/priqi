@@ -1,11 +1,11 @@
 use iced::widget::{button, container, text};
 use iced::{Background, Color, Font, Shadow, Vector, Widget, border, color, font};
 
-use crate::core::templates::models::{Message, UploadTab};
+use crate::core::widgets::import_modal::models::{ImportTab, Message};
 
 pub fn tab_button<'a>(
     label: &'a str,
-    tab: UploadTab,
+    tab: ImportTab,
     is_active: bool,
     is_left: bool,
 ) -> impl Widget<Message> + 'a {
@@ -39,7 +39,7 @@ pub fn tab_button<'a>(
         )
         .padding([6, 18]),
     )
-    .on_press(Message::SelectUploadTab(tab))
+    .on_press(Message::SelectTab(tab))
     .style(move |_theme, status| {
         let bg = if is_active {
             color!(0xffffff)

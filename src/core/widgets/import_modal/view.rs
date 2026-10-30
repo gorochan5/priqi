@@ -1,15 +1,16 @@
 use iced::widget::{button, center, column, container, mouse_area, opaque, row, space, text};
 use iced::{Element, Font, Length, Shadow, Vector, Widget, alignment, border, color, font};
 
+use super::models::{ImportConfig, ImportTab, Message, State};
+use super::widgets::dropzone::dropzone;
+use super::widgets::paste_editor::paste_editor;
+use super::widgets::tab_button::tab_button;
+pub use super::widgets::upload_button::upload_button;
 use crate::core::icons::arrow_down_to_line;
-use crate::core::templates::models::{Message, State, UploadTab};
-use crate::core::templates::widgets::dropzone::dropzone;
-use crate::core::templates::widgets::paste_editor::paste_editor;
-use crate::core::templates::widgets::tab_button::tab_button;
 
-pub fn upload_popup(state: &State) -> impl Widget<Message> {
-    // 1. Título "Importar Etiqueta"
-    let title = text("Importar Etiqueta")
+pub fn view<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Message> + 'a {
+    // 1. Título dinâmico ("Importar Etiqueta" ou "Importar Base de Dados")
+    let title = text(config.title)
         .size(24)
         .font(Font {
             weight: font::Weight::Bold,
@@ -22,16 +23,16 @@ pub fn upload_popup(state: &State) -> impl Widget<Message> {
         row![
             tab_button(
                 "Colar conteúdo",
-                UploadTab::Paste,
-                state.upload_tab == UploadTab::Paste,
+                ImportTab::Paste,
+                state.active_tab == ImportTab::Paste,
                 true,
             ),
             container(space().width(Length::Fixed(1.0)).height(Length::Fixed(18.0)))
                 .style(|_theme| container::Style::default().background(color!(0xcbd5e1))),
             tab_button(
                 "Importar arquivo",
-                UploadTab::File,
-                state.upload_tab == UploadTab::File,
+                ImportTab::File,
+                state.active_tab == ImportTab::File,
                 false,
             ),
         ]
@@ -44,10 +45,10 @@ pub fn upload_popup(state: &State) -> impl Widget<Message> {
             .border(border::rounded(20))
     });
 
-    // 3. Área Central (Editor ou Dropzone)
-    let body_content: Element<'_, Message> = match state.upload_tab {
-        UploadTab::Paste => paste_editor(state).boxed(),
-        UploadTab::File => dropzone(state).boxed(),
+    // 3. Área Central (Editor parametrizado ou Dropzone parametrizado)
+    let body_content: Element<'_, Message> = match state.active_tab {
+        ImportTab::Paste => paste_editor(state, config).boxed(),
+        ImportTab::File => dropzone(state, config).boxed(),
     };
 
     // 4. Botão "Importar" no rodapé
@@ -132,9 +133,6 @@ pub fn upload_popup(state: &State) -> impl Widget<Message> {
                 container::Style::default().background(color!(0x000000, 0.45))
             }),
         )
-        .on_press(Message::CloseUploadModal),
+        .on_press(Message::Close),
     )
 }
-
-// Re-export com o nome upload_modal para retrocompatibilidade
-pub use upload_popup as upload_modal;

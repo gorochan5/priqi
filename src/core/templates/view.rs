@@ -1,15 +1,28 @@
-use iced::widget::{column, container, row, rule, space, text};
+use iced::widget::{button, column, container, row, rule, scrollable, space, text};
 use iced::{Length, Shadow, Vector, Widget, alignment, border, color};
 
-use crate::core::icons::qr_code;
+use crate::core::icons::{copy, plus, qr_code};
 use crate::core::templates::models::{Message, State};
-use crate::core::templates::widgets::upload_button::upload_button;
+use crate::core::templates::widgets::template_card::template_card;
+use crate::core::widgets::import_modal::upload_button;
 
-pub fn view(state: &State) -> impl Widget<Message> {
+pub fn view<'a>(state: &'a State) -> impl Widget<Message> + 'a {
     templates(state)
 }
 
-fn templates(state: &State) -> impl Widget<Message> {
+fn templates<'a>(state: &'a State) -> impl Widget<Message> + 'a {
+    let mut cards = column![].spacing(12).padding(2);
+    for template in &state.templates {
+        let is_selected = state.selected_id.as_deref() == Some(&template.id);
+        let is_editing = state.editing_id.as_deref() == Some(&template.id);
+        cards = cards.push(template_card(
+            template,
+            is_selected,
+            is_editing,
+            &state.editing_name,
+        ));
+    }
+
     container(
         column![
             row![
@@ -20,7 +33,11 @@ fn templates(state: &State) -> impl Widget<Message> {
                     text("TEMPLATES").size(14).color(color!(0x64748b)),
                 ],
                 space().width(Length::Fill),
-                upload_button(state),
+                duplicate_button(),
+                space().width(Length::Fixed(4.0)),
+                add_button(),
+                space().width(Length::Fixed(4.0)),
+                upload_button(&state.import_modal).map(Message::ImportModal),
             ]
             .align_y(alignment::Vertical::Center),
             rule::horizontal(1).style(|_theme| rule::Style {
@@ -29,8 +46,10 @@ fn templates(state: &State) -> impl Widget<Message> {
                 fill_mode: rule::FillMode::Full,
                 snap: true,
             }),
-            // things here i guess
-            text("Template")
+            space().height(Length::Fixed(6.0)),
+            scrollable(cards)
+                .height(Length::Fill)
+                .width(Length::Fill),
         ]
         .width(Length::Fill)
         .height(Length::Fill),
@@ -47,5 +66,55 @@ fn templates(state: &State) -> impl Widget<Message> {
                 blur_radius: 5.0,
                 color: color!(0x000000, 0.1),
             })
+    })
+}
+
+fn duplicate_button<'a>() -> impl Widget<Message> + 'a {
+    button(
+        container(copy().size(16).color(color!(0x07bc9f)))
+            .center_x(Length::Shrink)
+            .center_y(Length::Shrink),
+    )
+    .padding(4)
+    .on_press(Message::DuplicateTemplate)
+    .style(|_theme, status| {
+        let background = match status {
+            button::Status::Hovered => Some(color!(0xe8f6f3).into()),
+            button::Status::Pressed => Some(color!(0xdcf2ee).into()),
+            _ => None,
+        };
+
+        button::Style {
+            background,
+            text_color: color!(0x07bc9f),
+            border: border::rounded(6),
+            shadow: Shadow::default(),
+            snap: true,
+        }
+    })
+}
+
+fn add_button<'a>() -> impl Widget<Message> + 'a {
+    button(
+        container(plus().size(18).color(color!(0x07bc9f)))
+            .center_x(Length::Shrink)
+            .center_y(Length::Shrink),
+    )
+    .padding(4)
+    .on_press(Message::AddTemplate)
+    .style(|_theme, status| {
+        let background = match status {
+            button::Status::Hovered => Some(color!(0xe8f6f3).into()),
+            button::Status::Pressed => Some(color!(0xdcf2ee).into()),
+            _ => None,
+        };
+
+        button::Style {
+            background,
+            text_color: color!(0x07bc9f),
+            border: border::rounded(6),
+            shadow: Shadow::default(),
+            snap: true,
+        }
     })
 }

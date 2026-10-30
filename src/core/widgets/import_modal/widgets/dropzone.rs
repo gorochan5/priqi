@@ -6,9 +6,9 @@ use iced::{
 };
 
 use crate::core::icons::cloud_upload;
-use crate::core::templates::models::{Message, State};
+use crate::core::widgets::import_modal::models::{ImportConfig, Message, State};
 
-pub fn dropzone(_state: &State) -> impl Widget<Message> {
+pub fn dropzone(_state: &State, config: ImportConfig) -> impl Widget<Message> {
     button(
         container(
             iced::widget::stack![
@@ -27,7 +27,7 @@ pub fn dropzone(_state: &State) -> impl Widget<Message> {
                             })
                             .color(color!(0x334155)),
                         space().height(Length::Fixed(4.0)),
-                        text("Suporta arquivos de etiqueta (.zpl, .txt, .prn)")
+                        text(config.dropzone_hint)
                             .size(12)
                             .color(color!(0x94a3b8)),
                     ]
@@ -115,4 +115,3 @@ impl<Message> canvas::Program<Message> for DashedBorderCanvas {
         vec![geometry]
     }
 }
-
