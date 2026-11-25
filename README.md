@@ -1,4 +1,4 @@
-# Priqi (`priqi_iced`)
+# Priqi
 
 **Priqi** is a native desktop application for designing, previewing, data-binding, and printing **ZPL (Zebra Programming Language)** thermal labels. Built with **Rust** and **Iced (`0.15.0-dev`)**, it combines a syntax-highlighted ZPL editor, live rasterized previews, a spreadsheet-like dataset manager for variable data printing, direct Windows RAW print spooling, and a pure-Rust multi-page PDF exporter.
 
