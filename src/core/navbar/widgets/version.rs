@@ -1,17 +1,14 @@
-use crate::core::{icons, navbar::models::Message};
-use iced::widget::text::Alignment;
+use crate::core::navbar::models::{Message, State};
 use iced::{
-    Length, Widget,
-    border::{self, rounded},
-    color,
-    widget::{Button, Image, button, column, container, row, space, text},
+    Length, Widget, border, color,
+    widget::{container, text},
 };
 
-pub fn render<'a>(_state: &()) -> impl Widget<Message> + 'a {
-    container(text("v0.1.0").size(9).center())
-        .width(Length::Fixed(32.0))
-        .height(Length::Fixed(16.0))
-        .padding(5)
+pub fn render<'a>(_state: &State) -> impl Widget<Message> + 'a {
+    container(text(concat!("v", env!("CARGO_PKG_VERSION"))).size(9).center())
+        .width(Length::Shrink)
+        .height(Length::Shrink)
+        .padding([2, 8])
         .style(|_theme| {
             container::Style::default()
                 .background(color!(0xe6f4f1)) // Fundo verde/menta bem claro

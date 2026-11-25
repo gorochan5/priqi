@@ -6,15 +6,9 @@ use iced::widget::{container, text};
 
 use crate::core::editor::models::{Message, State};
 
-pub fn line_numbers(state: &State) -> impl Widget<Message> {
-    let total_lines = state.content.line_count().max(1);
-    let numbers = (1..=total_lines)
-        .map(|i| i.to_string())
-        .collect::<Vec<_>>()
-        .join("\n");
-
+pub fn line_numbers(state: &State) -> impl Widget<Message> + '_ {
     container(
-        text(numbers)
+        text(&state.cached_line_numbers)
             .font(Font::MONOSPACE)
             .size(14)
             .line_height(1.5)

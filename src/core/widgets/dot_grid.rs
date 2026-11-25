@@ -31,6 +31,10 @@ impl<Message> canvas::Program<Message> for DotGrid {
         bounds: Rectangle,
         _cursor: iced::mouse::Cursor,
     ) -> Vec<Geometry> {
+        if self.spacing <= 1.0 || self.radius <= 0.0 {
+            return vec![];
+        }
+
         let geometry = cache.draw(renderer, bounds.size(), |frame| {
             frame.fill_rectangle(Point::ORIGIN, bounds.size(), self.bg_color);
 

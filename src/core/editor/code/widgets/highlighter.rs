@@ -48,28 +48,52 @@ impl text::Parser for ZplParser {
                 let start = i;
                 i += 1;
 
+                if i >= len {
+                    break;
+                }
+
+                // ^FX comments: highlight the ^FX mnemonic and skip the rest of the line
+                if bytes[start] == b'^'
+                    && i + 1 < len
+                    && bytes[i].eq_ignore_ascii_case(&b'F')
+                    && bytes[i + 1].eq_ignore_ascii_case(&b'X')
+                {
+                    tokens.push((start..i + 2, ZplToken::Function));
+                    i = len;
+                    continue;
+                }
+
                 let cmd_start = i;
-                if i < len && (bytes[i] == b'A' || bytes[i] == b'a') {
+                if bytes[i].eq_ignore_ascii_case(&b'A') {
                     i += 1;
                     if i < len && (bytes[i].is_ascii_alphanumeric() || bytes[i] == b'@') {
                         i += 1;
                     }
+                    if i < len && bytes[i].is_ascii_alphabetic() {
+                        i += 1;
+                    }
                 } else {
-                    while i < len && bytes[i].is_ascii_alphabetic() && (i - cmd_start) < 2 {
+                    while i < len && bytes[i].is_ascii_alphabetic() && (i - cmd_start) < 3 {
                         i += 1;
                     }
                 }
 
-                tokens.push((start..i, ZplToken::Function));
+                if i > cmd_start {
+                    tokens.push((start..i, ZplToken::Function));
+                } else {
+                    i = start + 1;
+                }
             } else if bytes[i] == b'[' {
                 let start = i;
                 i += 1;
-                while i < len && bytes[i] != b']' {
+                while i < len && bytes[i] != b']' && bytes[i] != b'[' {
                     i += 1;
                 }
                 if i < len && bytes[i] == b']' {
                     i += 1;
                     tokens.push((start..i, ZplToken::Bracket));
+                } else {
+                    i = start + 1;
                 }
             } else {
                 i += 1;

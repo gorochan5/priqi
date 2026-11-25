@@ -29,8 +29,12 @@ $sb = [System.Text.StringBuilder]::new()
 [void]$sb.AppendLine('    iced::widget::text(codepoint).font(FONT)')
 [void]$sb.AppendLine('}')
 [void]$sb.AppendLine('')
+[void]$sb.AppendLine('static BRANDING_HANDLE: std::sync::LazyLock<Handle> = std::sync::LazyLock::new(|| {')
+[void]$sb.AppendLine('    Handle::from_bytes(&include_bytes!("../../resources/branding.png")[..])')
+[void]$sb.AppendLine('});')
+[void]$sb.AppendLine('')
 [void]$sb.AppendLine('pub fn branding() -> Image {')
-[void]$sb.AppendLine('    iced::widget::image(Handle::from_bytes(&include_bytes!("../../resources/branding.png")[..]))')
+[void]$sb.AppendLine('    iced::widget::image(BRANDING_HANDLE.clone())')
 [void]$sb.AppendLine('}')
 
 $seen = @{}

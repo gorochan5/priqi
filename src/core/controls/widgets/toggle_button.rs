@@ -1,5 +1,5 @@
 use iced::widget::{button, container};
-use iced::{Length, Shadow, Vector, Widget, border, color};
+use iced::{Length, Padding, Shadow, Vector, Widget, border, color};
 
 use crate::core::controls::models::{Message, State};
 use crate::core::icons;
@@ -11,9 +11,9 @@ pub fn toggle_button(state: &State) -> impl Widget<Message> {
         icons::chevron_down()
     };
 
-    button(container(icon.size(16).color(color!(0x07bc9f))).center_x(Length::Fill))
-        .width(Length::Fixed(48.0))
-        .padding([4, 12])
+    let btn = button(container(icon.size(16).color(color!(0x07bc9f))).center_x(Length::Fill))
+        .width(Length::Fixed(45.0))
+        .padding([4, 10])
         .on_press(Message::ToggleCollapse)
         .style(|_theme, status| {
             let background = match status {
@@ -25,15 +25,27 @@ pub fn toggle_button(state: &State) -> impl Widget<Message> {
             button::Style {
                 background: Some(background.into()),
                 text_color: color!(0x07bc9f),
-                border: border::rounded(border::top(8))
-                    .color(color!(0xeaeaea))
-                    .width(1.5),
-                shadow: Shadow {
+                border: border::rounded(border::top(6.5)),
+                shadow: Shadow::default(),
+                snap: true,
+            }
+        });
+
+    container(btn)
+        .padding(Padding {
+            top: 1.5,
+            right: 1.5,
+            bottom: 0.0,
+            left: 1.5,
+        })
+        .style(|_theme| {
+            container::Style::default()
+                .background(color!(0xeaeaea))
+                .border(border::rounded(border::top(8)))
+                .shadow(Shadow {
                     offset: Vector::new(0.0, -1.0),
                     blur_radius: 4.0,
                     color: color!(0x000000, 0.06),
-                },
-                snap: true,
-            }
+                })
         })
 }

@@ -1,26 +1,21 @@
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 
 use crate::core::widgets::import_modal;
 
 pub const TABLE_SCROLLABLE_ID: &str = "datasets_table_scrollable";
+pub const TABLE_ROWS_SCROLLABLE_ID: &str = "datasets_table_rows_scrollable";
+pub const CELL_INPUT_ID: &str = "datasets_cell_input";
+pub const DATASET_RENAME_INPUT_ID: &str = "datasets_rename_input";
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Dataset {
-    #[default]
-    LocaisDeEstoque,
-    Usuarios,
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct DatasetOption {
+    pub id: String,
+    pub name: String,
 }
 
-impl Dataset {
-    pub const ALL: [Dataset; 2] = [Dataset::LocaisDeEstoque, Dataset::Usuarios];
-}
-
-impl std::fmt::Display for Dataset {
+impl std::fmt::Display for DatasetOption {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::LocaisDeEstoque => write!(f, "Locais de Estoque"),
-            Self::Usuarios => write!(f, "Usuários"),
-        }
+        write!(f, "{}", self.name)
     }
 }
 
@@ -38,9 +33,32 @@ impl TableData {
         }
     }
 
+    pub fn remove_column(&mut self, col: usize) {
+        if col < self.headers.len() {
+            self.headers.remove(col);
+            for row in &mut self.rows {
+                if col < row.len() {
+                    row.remove(col);
+                }
+            }
+        }
+    }
+
     pub fn add_row(&mut self) {
         let col_count = self.headers.len();
         self.rows.push(vec![String::new(); col_count]);
+    }
+
+    pub fn remove_rows(&mut self, rows_to_remove: &BTreeSet<usize>) {
+        if rows_to_remove.is_empty() {
+            return;
+        }
+        let mut idx = 0;
+        self.rows.retain(|_| {
+            let keep = !rows_to_remove.contains(&idx);
+            idx += 1;
+            keep
+        });
     }
 
     pub fn set_cell(&mut self, row: usize, col: usize, val: String) {
@@ -66,115 +84,83 @@ pub enum CellCoord {
 
 #[derive(Debug, Clone)]
 pub enum Message {
-    Nothing,
-    DatasetSelected(Dataset),
+    DatasetSelected(DatasetOption),
+    ToggleDatasetDropdown,
+    CloseDatasetDropdown,
+    AddDataset,
+    StartRenameDataset(String),
+    DatasetNameChanged(String),
+    SaveDatasetRename,
+    CancelDatasetRename,
+    DeleteDataset(String),
     SelectRow(usize),
+    ToggleRowSelection(usize),
+    SelectAllRows,
+    ClearSelection,
+    DeleteSelectedRows,
     StartEditingCell(CellCoord),
     EditingValueChanged(String),
     SaveCell,
     CancelEditing,
     AddColumn,
+    DeleteColumn(usize),
     AddRow,
     SearchChanged(String),
     ImportModal(import_modal::Message),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct State {
-    pub dataset: Option<Dataset>,
-    pub tables: HashMap<Dataset, TableData>,
-    pub selected_row: Option<usize>,
+    pub options: Vec<DatasetOption>,
+    pub dataset: Option<DatasetOption>,
+    pub tables: HashMap<String, TableData>,
+    pub selected_rows: BTreeSet<usize>,
+    pub last_selected_row: Option<usize>,
+    pub shift_pressed: bool,
     pub editing_cell: Option<CellCoord>,
     pub editing_value: String,
+    pub is_dropdown_open: bool,
+    pub renaming_dataset_id: Option<String>,
+    pub dataset_name_input: String,
     pub search_query: String,
-    pub column_counter: usize,
+    pub dataset_counter: usize,
+    pub dirty_dataset_ids: Vec<String>,
+    pub deleted_dataset_ids: Vec<String>,
     pub import_modal: import_modal::State,
 }
 
-impl Default for State {
-    fn default() -> Self {
-        let mut tables = HashMap::new();
-
-        let locais = TableData {
-            headers: vec![
-                "LOCATION / BIN".to_string(),
-                "SKU IDENTIFIER".to_string(),
-            ],
-            rows: vec![
-                vec!["Aisle-01-Shelf-B".to_string(), "SKU-10234".to_string()],
-                vec!["Aisle-02-Shelf-A".to_string(), "SKU-88213".to_string()],
-                vec!["Recv-Dock-01".to_string(), "SKU-S5501".to_string()],
-                vec!["Aisle-07-Bin-C".to_string(), "SKU-44108".to_string()],
-                vec!["Cold-Room-02".to_string(), "SKU-71006".to_string()],
-            ],
-        };
-
-        let usuarios = TableData {
-            headers: vec![
-                "USUÁRIO".to_string(),
-                "MATRÍCULA".to_string(),
-                "DEPARTAMENTO".to_string(),
-            ],
-            rows: vec![
-                vec![
-                    "Carlos Silva".to_string(),
-                    "USR-0042".to_string(),
-                    "Expedição".to_string(),
-                ],
-                vec![
-                    "Mariana Santos".to_string(),
-                    "USR-0089".to_string(),
-                    "Almoxarifado".to_string(),
-                ],
-                vec![
-                    "Roberto Almeida".to_string(),
-                    "USR-0112".to_string(),
-                    "Produção".to_string(),
-                ],
-                vec![
-                    "Ana Paula Costa".to_string(),
-                    "USR-0158".to_string(),
-                    "Controle de Qualidade".to_string(),
-                ],
-                vec![
-                    "Lucas Fernandes".to_string(),
-                    "USR-0203".to_string(),
-                    "Logística".to_string(),
-                ],
-            ],
-        };
-
-        tables.insert(Dataset::LocaisDeEstoque, locais);
-        tables.insert(Dataset::Usuarios, usuarios);
-
-        Self {
-            dataset: Some(Dataset::LocaisDeEstoque),
-            tables,
-            selected_row: Some(1),
-            editing_cell: None,
-            editing_value: String::new(),
-            search_query: String::new(),
-            column_counter: 0,
-            import_modal: import_modal::State::default(),
+impl State {
+    pub fn mark_dirty(&mut self, id: &str) {
+        if !self.dirty_dataset_ids.iter().any(|existing| existing == id) {
+            self.dirty_dataset_ids.push(id.to_string());
         }
     }
-}
 
-impl State {
-    pub fn current_table(&self) -> Option<&TableData> {
-        self.dataset.and_then(|d| self.tables.get(&d))
+    pub fn take_dirty_ids(&mut self) -> Vec<String> {
+        std::mem::take(&mut self.dirty_dataset_ids)
     }
 
-    pub fn current_table_mut(&mut self) -> Option<&mut TableData> {
-        let d = self.dataset?;
-        self.tables.get_mut(&d)
+    pub fn take_deleted_ids(&mut self) -> Vec<String> {
+        std::mem::take(&mut self.deleted_dataset_ids)
+    }
+
+    pub fn current_table(&self) -> Option<&TableData> {
+        self.dataset.as_ref().and_then(|d| self.tables.get(&d.id))
+    }
+
+    pub fn is_row_selected(&self, row: usize) -> bool {
+        self.selected_rows.contains(&row)
+    }
+
+    pub fn selected_count(&self) -> usize {
+        self.selected_rows.len()
+    }
+
+    pub fn first_selected_row(&self) -> Option<usize> {
+        self.selected_rows.iter().next().copied()
     }
 
     pub fn search_placeholder(&self) -> &'static str {
-        match self.dataset {
-            Some(Dataset::LocaisDeEstoque) => "Search location, SKU or batch...",
-            Some(Dataset::Usuarios) => "Buscar usuário, matrícula ou setor...",
-            None => "Buscar no dataset...",
-        }
+        "Buscar no dataset..."
     }
 }

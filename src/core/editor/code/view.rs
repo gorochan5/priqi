@@ -3,7 +3,7 @@ use iced::Widget;
 use iced::alignment;
 use iced::border;
 use iced::color;
-use iced::widget::{container, responsive, row, scrollable};
+use iced::widget::{container, row, scrollable};
 
 use crate::core::editor::code::widgets::code_input::code_input;
 use crate::core::editor::code::widgets::line_numbers::line_numbers;
@@ -14,19 +14,21 @@ pub fn view(state: &State) -> impl Widget<Message> + '_ {
 }
 
 fn code(state: &State) -> impl Widget<Message> + '_ {
-    container(responsive(move |size| {
+    container(
         scrollable(
-            row![
-                line_numbers(state),
-                code_input(state, size.height)
-            ]
-            .width(Length::Fill)
-            .height(Length::Shrink.min(size.height))
-            .align_y(alignment::Vertical::Top),
+            row![line_numbers(state), code_input(state)]
+                .width(Length::Shrink)
+                .height(Length::Shrink)
+                .align_y(alignment::Vertical::Top),
         )
+        .direction(scrollable::Direction::Both {
+            vertical: scrollable::Scrollbar::default(),
+            horizontal: scrollable::Scrollbar::default(),
+        })
         .width(Length::Fill)
         .height(Length::Fill)
-    }))
+        .style(crate::core::widgets::dark_scrollbar_style),
+    )
     .width(Length::Fill)
     .height(Length::Fill)
     .style(|_theme| {

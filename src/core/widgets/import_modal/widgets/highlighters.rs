@@ -47,41 +47,72 @@ impl text::Parser for CsvParser {
 
         while i < len {
             match bytes[i] {
-                b',' | b';' => {
+                b',' | b';' | b'\t' => {
                     tokens.push((i..i + 1, CsvToken::Delimiter));
                     i += 1;
                 }
                 b'"' => {
                     let start = i;
                     i += 1;
-                    while i < len && bytes[i] != b'"' {
-                        i += 1;
-                    }
-                    if i < len && bytes[i] == b'"' {
-                        i += 1;
+                    while i < len {
+                        if bytes[i] == b'"' {
+                            if i + 1 < len && bytes[i + 1] == b'"' {
+                                i += 2;
+                            } else {
+                                i += 1;
+                                break;
+                            }
+                        } else {
+                            i += 1;
+                        }
                     }
                     tokens.push((start..i, CsvToken::Quoted));
                 }
-                b'0'..=b'9' | b'-' => {
-                    let start = i;
-                    i += 1;
-                    while i < len && (bytes[i].is_ascii_digit() || bytes[i] == b'.') {
-                        i += 1;
-                    }
-                    tokens.push((start..i, CsvToken::Number));
-                }
                 _ => {
                     let start = i;
-                    while i < len && bytes[i] != b',' && bytes[i] != b';' && bytes[i] != b'"' {
+                    while i < len
+                        && bytes[i] != b','
+                        && bytes[i] != b';'
+                        && bytes[i] != b'\t'
+                        && bytes[i] != b'"'
+                    {
                         i += 1;
                     }
-                    tokens.push((start..i, CsvToken::Field));
+                    let token_kind = if is_csv_number(&line[start..i]) {
+                        CsvToken::Number
+                    } else {
+                        CsvToken::Field
+                    };
+                    tokens.push((start..i, token_kind));
                 }
             }
         }
 
         tokens.into_iter()
     }
+}
+
+fn is_csv_number(s: &str) -> bool {
+    let s = s.trim();
+    if s.is_empty() {
+        return false;
+    }
+    let s = s.strip_prefix(['-', '+']).unwrap_or(s);
+    if s.is_empty() {
+        return false;
+    }
+    let mut seen_dot = false;
+    let mut seen_digit = false;
+    for b in s.bytes() {
+        if b.is_ascii_digit() {
+            seen_digit = true;
+        } else if b == b'.' && !seen_dot {
+            seen_dot = true;
+        } else {
+            return false;
+        }
+    }
+    seen_digit
 }
 
 pub fn csv_highlight(token: CsvToken, _theme: &Theme) -> highlighter::Style {

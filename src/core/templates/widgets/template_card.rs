@@ -2,7 +2,7 @@ use iced::widget::{button, column, container, mouse_area, row, space, stack, tex
 use iced::{Length, Shadow, Vector, Widget, border, color, font, mouse};
 
 use crate::core::icons;
-use crate::core::templates::models::{Message, Template};
+use crate::core::templates::models::{Message, RENAME_INPUT_ID, Template};
 use crate::core::templates::widgets::label_previews::render_preview;
 
 pub fn template_card<'a>(
@@ -41,7 +41,7 @@ pub fn template_card<'a>(
 
     let preview_box = container(
         stack![
-            container(render_preview(template.sample_kind))
+            container(render_preview(template))
                 .width(Length::Fill)
                 .height(Length::Fill)
                 .center_x(Length::Fill)
@@ -73,6 +73,7 @@ pub fn template_card<'a>(
     let title_area: iced::Element<'a, Message> = if is_editing {
         row![
             text_input("Nome da etiqueta", editing_name)
+                .id(RENAME_INPUT_ID)
                 .on_input(Message::RenameInputChanged)
                 .on_submit(Message::SaveRename)
                 .size(12)

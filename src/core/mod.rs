@@ -1,9 +1,12 @@
 pub mod controls;
 pub mod datasets;
+pub mod db;
 pub mod editor;
 pub mod icons;
 pub mod models;
 pub mod navbar;
+pub mod printer;
+pub mod renderer;
 pub mod templates;
 pub mod update;
 pub mod view;

@@ -73,7 +73,7 @@ fn tab_button<'a>(
         .align_y(alignment::Vertical::Center),
     )
     .padding([8, 14])
-    .on_press(Message::SelectTab(tab))
+    .on_press_maybe((!is_active).then_some(Message::SelectTab(tab)))
     .style(move |_theme, status| {
         if is_active {
             let bg = match status {

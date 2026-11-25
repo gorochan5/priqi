@@ -11,29 +11,41 @@ pub fn view<'a>(state: &'a State) -> impl Widget<Message> + 'a {
 }
 
 fn templates<'a>(state: &'a State) -> impl Widget<Message> + 'a {
-    let mut cards = column![].spacing(12).padding(2);
-    for template in &state.templates {
-        let is_selected = state.selected_id.as_deref() == Some(&template.id);
-        let is_editing = state.editing_id.as_deref() == Some(&template.id);
-        cards = cards.push(template_card(
-            template,
-            is_selected,
-            is_editing,
-            &state.editing_name,
-        ));
-    }
+    let list_body: iced::Element<'a, Message> = if state.templates.is_empty() {
+        container(
+            text("Nenhum template no banco...")
+                .size(13)
+                .color(color!(0x94a3b8)),
+        )
+        .center(Length::Fill)
+        .boxed()
+    } else {
+        let mut cards = column![].spacing(12).padding(2);
+        for template in &state.templates {
+            let is_selected = state.selected_id.as_deref() == Some(&template.id);
+            let is_editing = state.editing_id.as_deref() == Some(&template.id);
+            cards = cards.push(template_card(
+                template,
+                is_selected,
+                is_editing,
+                &state.editing_name,
+            ));
+        }
+        scrollable(cards)
+            .height(Length::Fill)
+            .width(Length::Fill)
+            .style(crate::core::widgets::light_scrollbar_style)
+            .boxed()
+    };
 
     container(
         column![
             row![
                 qr_code().size(24).color(color!(0x07bc9f)),
                 space().width(Length::Fixed(5.0)),
-                column![
-                    text("").size(5),
-                    text("TEMPLATES").size(14).color(color!(0x64748b)),
-                ],
+                text("TEMPLATES").size(14).color(color!(0x64748b)),
                 space().width(Length::Fill),
-                duplicate_button(),
+                duplicate_button(state.selected_id.is_some()),
                 space().width(Length::Fixed(4.0)),
                 add_button(),
                 space().width(Length::Fixed(4.0)),
@@ -47,9 +59,7 @@ fn templates<'a>(state: &'a State) -> impl Widget<Message> + 'a {
                 snap: true,
             }),
             space().height(Length::Fixed(6.0)),
-            scrollable(cards)
-                .height(Length::Fill)
-                .width(Length::Fill),
+            list_body,
         ]
         .width(Length::Fill)
         .height(Length::Fill),
@@ -69,14 +79,19 @@ fn templates<'a>(state: &'a State) -> impl Widget<Message> + 'a {
     })
 }
 
-fn duplicate_button<'a>() -> impl Widget<Message> + 'a {
+fn duplicate_button<'a>(enabled: bool) -> impl Widget<Message> + 'a {
+    let icon_color = if enabled {
+        color!(0x07bc9f)
+    } else {
+        color!(0xcbd5e1)
+    };
     button(
-        container(copy().size(16).color(color!(0x07bc9f)))
+        container(copy().size(16).color(icon_color))
             .center_x(Length::Shrink)
             .center_y(Length::Shrink),
     )
     .padding(4)
-    .on_press(Message::DuplicateTemplate)
+    .on_press_maybe(enabled.then_some(Message::DuplicateTemplate))
     .style(|_theme, status| {
         let background = match status {
             button::Status::Hovered => Some(color!(0xe8f6f3).into()),

@@ -9,14 +9,45 @@ pub use super::widgets::upload_button::upload_button;
 use crate::core::icons::arrow_down_to_line;
 
 pub fn view<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Message> + 'a {
-    // 1. Título dinâmico ("Importar Etiqueta" ou "Importar Base de Dados")
+    // 1. Título dinâmico ("Importar Etiqueta" ou "Importar Base de Dados") e botão fechar
     let title = text(config.title)
-        .size(24)
+        .size(22)
         .font(Font {
             weight: font::Weight::Bold,
             ..Default::default()
         })
         .color(color!(0x0f172a));
+
+    let close_btn = button(
+        container(crate::core::icons::x().size(18).color(color!(0x64748b)))
+            .center_x(Length::Shrink)
+            .center_y(Length::Shrink),
+    )
+    .padding(6)
+    .on_press(Message::Close)
+    .style(|_theme, status| {
+        let bg = match status {
+            button::Status::Hovered => Some(color!(0xe2e8f0).into()),
+            button::Status::Pressed => Some(color!(0xcbd5e1).into()),
+            _ => None,
+        };
+        button::Style {
+            background: bg,
+            text_color: color!(0x64748b),
+            border: border::rounded(8),
+            ..Default::default()
+        }
+    });
+
+    let header = iced::widget::stack![
+        container(title)
+            .width(Length::Fill)
+            .center_x(Length::Fill)
+            .center_y(Length::Shrink),
+        container(close_btn)
+            .width(Length::Fill)
+            .align_x(alignment::Horizontal::Right),
+    ];
 
     // 2. Segmented control / Tabs: "Colar conteúdo" | "Importar arquivo"
     let tabs = container(
@@ -91,12 +122,33 @@ pub fn view<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Message> 
         }
     });
 
+    let error_banner: Element<'_, Message> = if let Some(err) = &state.file_error {
+        container(
+            row![
+                crate::core::icons::circle_alert()
+                    .size(15)
+                    .color(color!(0xdc2626)),
+                space().width(Length::Fixed(8.0)),
+                text(err).size(12).color(color!(0xb91c1c)),
+            ]
+            .align_y(alignment::Vertical::Center),
+        )
+        .width(Length::Fill)
+        .padding([8, 12])
+        .style(|_theme| {
+            container::Style::default()
+                .background(color!(0xfee2e2))
+                .border(border::rounded(8).color(color!(0xfca5a5)).width(1.0))
+        })
+        .boxed()
+    } else {
+        space().height(Length::Fixed(0.0)).boxed()
+    };
+
     let dialog_card = container(
         column![
-            // Topo: Título centralizado
-            container(title)
-                .width(Length::Fill)
-                .center_x(Length::Fill),
+            // Topo: Título centralizado + botão fechar
+            header,
             space().height(Length::Fixed(16.0)),
             // Abas centralizadas
             container(tabs)
@@ -107,7 +159,9 @@ pub fn view<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Message> 
             container(body_content)
                 .width(Length::Fill)
                 .height(Length::Fixed(320.0)),
-            space().height(Length::Fixed(18.0)),
+            space().height(Length::Fixed(10.0)),
+            error_banner,
+            space().height(Length::Fixed(10.0)),
             // Botão Importar centralizado
             container(import_button)
                 .width(Length::Fill)

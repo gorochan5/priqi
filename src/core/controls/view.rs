@@ -17,28 +17,28 @@ fn controls(state: &State) -> impl Widget<Message> {
         .width(Length::Shrink);
 
     if !state.collapsed {
-        let card = container(
-            column![
-                row![printers_dropdown(state), copies_slider(state),]
-                    .spacing(100)
-                    .align_y(alignment::Vertical::Center),
-                print_button(state),
-            ]
-            .spacing(10)
-            .width(Length::Shrink),
-        )
-        .padding(10)
-        .width(Length::Shrink)
-        .style(|_theme| {
-            container::Style::default()
-                .background(color!(0xfefefe))
-                .border(border::rounded(10).color(color!(0xeaeaea)).width(1.5))
-                .shadow(Shadow {
-                    offset: Vector::new(0.0, 2.0),
-                    blur_radius: 5.0,
-                    color: color!(0x000000, 0.1),
-                })
-        });
+        let card_column = column![
+            row![printers_dropdown(state), copies_slider(state)]
+                .spacing(64)
+                .align_y(alignment::Vertical::Bottom),
+            print_button(state),
+        ]
+        .spacing(10)
+        .width(Length::Shrink);
+
+        let card = container(card_column)
+            .padding(10)
+            .width(Length::Shrink)
+            .style(|_theme| {
+                container::Style::default()
+                    .background(color!(0xfefefe))
+                    .border(border::rounded(10).color(color!(0xeaeaea)).width(1.5))
+                    .shadow(Shadow {
+                        offset: Vector::new(0.0, 2.0),
+                        blur_radius: 5.0,
+                        color: color!(0x000000, 0.1),
+                    })
+            });
 
         content = content.push(opaque(card).boxed());
     }

@@ -18,8 +18,12 @@ fn icon<'a>(codepoint: char) -> Text<'a> {
     iced::widget::text(codepoint).font(FONT)
 }
 
+static BRANDING_HANDLE: std::sync::LazyLock<Handle> = std::sync::LazyLock::new(|| {
+    Handle::from_bytes(&include_bytes!("../../resources/branding.png")[..])
+});
+
 pub fn branding() -> Image {
-    iced::widget::image(Handle::from_bytes(&include_bytes!("../../resources/branding.png")[..]))
+    iced::widget::image(BRANDING_HANDLE.clone())
 }
 
 pub fn a_arrow_down<'a>() -> Text<'a> {

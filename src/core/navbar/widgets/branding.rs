@@ -1,22 +1,24 @@
 use iced::{
-    Length, Widget,
-    widget::{Button, Image, button, column, row, space},
+    Length, Widget, alignment,
+    widget::{row, space},
 };
 
 use crate::core::{
     icons,
-    navbar::{models::Message, widgets::version},
+    navbar::{
+        models::{Message, State},
+        widgets::version,
+    },
 };
 
-pub fn render<'a>(s_state: &()) -> impl Widget<Message> + 'a {
-    let version = version::render(s_state);
-    column![
-        space().height(8.0),
-        row![
-            icons::branding()
-                .width(Length::Fixed(128.0))
-                .height(Length::Fixed(32.0)),
-            column![space().height(8.0), version,]
-        ]
+pub fn render<'a>(state: &State) -> impl Widget<Message> + 'a {
+    let version = version::render(state);
+    row![
+        icons::branding()
+            .width(Length::Fixed(128.0))
+            .height(Length::Fixed(32.0)),
+        space().width(Length::Fixed(6.0)),
+        version,
     ]
+    .align_y(alignment::Vertical::Center)
 }

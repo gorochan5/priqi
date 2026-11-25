@@ -1,1 +1,4 @@
 /target
+/priqi.db*
+/priqi_print_output.zpl
+/output_labels/

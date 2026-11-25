@@ -25,22 +25,31 @@ pub fn copies_slider(state: &State) -> impl Widget<Message> {
 
     let copies_slider = slider(1..=100, copies, Message::CopiesChanged)
         .step(1)
+        .default(1u32)
+        .shift_step(10)
         .width(Length::Fixed(slider_width))
         .height(20.0)
-        .style(move |_theme, _status| slider::Style {
-            rail: Rail {
-                backgrounds: (color!(0x07bc9f).into(), color!(0xdbe7e5).into()),
-                width: 6.0,
-                border: border::rounded(3.0),
-            },
-            handle: Handle {
-                shape: HandleShape::Circle {
-                    radius: handle_radius,
+        .style(move |_theme, status| {
+            let (active_color, handle_bg) = match status {
+                slider::Status::Hovered => (color!(0x06967f), color!(0xf0fdfa)),
+                slider::Status::Dragged => (color!(0x057a67), color!(0xe6f4f1)),
+                slider::Status::Active => (color!(0x07bc9f), color!(0xffffff)),
+            };
+            slider::Style {
+                rail: Rail {
+                    backgrounds: (active_color.into(), color!(0xdbe7e5).into()),
+                    width: 6.0,
+                    border: border::rounded(3.0),
                 },
-                background: color!(0xffffff).into(),
-                border_width: 4.0,
-                border_color: color!(0x07bc9f),
-            },
+                handle: Handle {
+                    shape: HandleShape::Circle {
+                        radius: handle_radius,
+                    },
+                    background: handle_bg.into(),
+                    border_width: 4.0,
+                    border_color: active_color,
+                },
+            }
         });
 
     let copies_badge = container(text(format!("{copies}")).size(11).color(color!(0xffffff)))
@@ -54,19 +63,17 @@ pub fn copies_slider(state: &State) -> impl Widget<Message> {
         });
 
     column![
-        row![column![
+        column![
             copies_slider,
             space().height(Length::Fixed(2.0)),
-            row![space().width(Length::Fixed(badge_offset)), copies_badge,],
-        ],]
-        .align_y(alignment::Vertical::Center),
+            row![space().width(Length::Fixed(badge_offset)), copies_badge],
+        ],
+        space().height(Length::Fixed(6.0)),
         row![
-            icons::copy().size(24).color(color!(0x07bc9f)),
-            space().width(Length::Fixed(5.0)),
-            column![
-                text("").size(5),
-                text("CÓPIAS").size(14).color(color!(0x64748b)),
-            ]
+            icons::copy().size(20).color(color!(0x07bc9f)),
+            space().width(Length::Fixed(6.0)),
+            text("CÓPIAS").size(13).color(color!(0x64748b)),
         ]
+        .align_y(alignment::Vertical::Center),
     ]
 }
