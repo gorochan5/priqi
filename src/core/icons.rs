@@ -19,7 +19,14 @@ fn icon<'a>(codepoint: char) -> Text<'a> {
 }
 
 static BRANDING_HANDLE: std::sync::LazyLock<Handle> = std::sync::LazyLock::new(|| {
-    Handle::from_bytes(&include_bytes!("../../resources/branding.png")[..])
+    let bytes = include_bytes!("../../resources/branding.png");
+    if let Ok(img) = image::load_from_memory(bytes) {
+        let rgba = img.into_rgba8();
+        let (width, height) = rgba.dimensions();
+        Handle::from_rgba(width, height, rgba.into_raw())
+    } else {
+        Handle::from_bytes(&bytes[..])
+    }
 });
 
 pub fn branding() -> Image {

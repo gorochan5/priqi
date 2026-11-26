@@ -1,5 +1,5 @@
 use iced::widget::{button, column, container, row, scrollable, space, text};
-use iced::{Length, Shadow, Vector, Widget, alignment, border, color};
+use iced::{Length, Shadow, Widget, alignment, border, color};
 
 use crate::core::datasets::models::{DatasetOption, Message, State};
 use crate::core::icons::{chevron_down, chevron_up, pencil, trash};
@@ -64,6 +64,7 @@ pub fn datasets_dropdown_menu<'a>(state: &'a State) -> impl Widget<Message> + 'a
 
     container(
         scrollable(list)
+            .smooth_scroll(false)
             .width(Length::Fill)
             .height(Length::Fill)
             .style(crate::core::widgets::light_scrollbar_style),
@@ -74,12 +75,7 @@ pub fn datasets_dropdown_menu<'a>(state: &'a State) -> impl Widget<Message> + 'a
     .style(|_theme| {
         container::Style::default()
             .background(color!(0xffffff))
-            .border(border::rounded(8).color(color!(0xe2e8f0)).width(1.0))
-            .shadow(Shadow {
-                offset: Vector::new(0.0, 4.0),
-                blur_radius: 12.0,
-                color: color!(0x000000, 0.12),
-            })
+            .border(border::rounded(8).color(color!(0xcbd5e1)).width(1.0))
     })
 }
 

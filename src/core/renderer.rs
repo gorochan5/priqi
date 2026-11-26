@@ -50,10 +50,6 @@ impl LabelRenderOptions {
     }
 }
 
-pub fn render_zpl_to_png(zpl: &str) -> Result<Vec<u8>, String> {
-    render_zpl_to_png_with_options(zpl, LabelRenderOptions::default())
-}
-
 pub fn render_zpl_to_png_with_options(
     zpl: &str,
     opts: LabelRenderOptions,
@@ -113,35 +109,53 @@ pub fn render_zpl_all_to_pngs(
     Ok(pngs)
 }
 
-pub fn render_zpl_all_to_handles(
-    zpl: &str,
-    opts: LabelRenderOptions,
-) -> Result<Vec<Handle>, String> {
-    let pngs = render_zpl_all_to_pngs(zpl, opts)?;
-    Ok(pngs.into_iter().map(Handle::from_bytes).collect())
+fn cap_preview_dpi(opts: LabelRenderOptions) -> LabelRenderOptions {
+    LabelRenderOptions {
+        dpi: if opts.dpi == 0 {
+            203
+        } else {
+            opts.dpi.min(203)
+        },
+        ..opts
+    }
 }
 
-pub fn render_zpl_to_handle(zpl: &str, rotation_deg: u16) -> Result<Handle, String> {
-    let png_bytes = render_zpl_to_png(zpl)?;
-    let angle = rotation_deg % 360;
-    if angle == 0 {
-        return Ok(Handle::from_bytes(png_bytes));
-    }
-
-    let dyn_img = image::load_from_memory(&png_bytes).map_err(|e| format!("{e}"))?;
-    let rotated = match angle {
-        90 => dyn_img.rotate90(),
-        180 => dyn_img.rotate180(),
-        270 => dyn_img.rotate270(),
-        _ => dyn_img,
-    };
-
-    let rgba = rotated.into_rgba8();
+fn decode_png_to_rgba_handle(png_bytes: &[u8]) -> Result<Handle, String> {
+    let dyn_img = image::load_from_memory(png_bytes).map_err(|e| format!("{e}"))?;
+    let rgba = dyn_img.into_rgba8();
     Ok(Handle::from_rgba(
         rgba.width(),
         rgba.height(),
         rgba.into_raw(),
     ))
+}
+
+pub fn render_zpl_to_thumbnail_handle(
+    zpl: &str,
+    opts: LabelRenderOptions,
+    max_dim: u32,
+) -> Result<Handle, String> {
+    let png_bytes = render_zpl_to_png_with_options(zpl, cap_preview_dpi(opts))?;
+    let mut dyn_img = image::load_from_memory(&png_bytes).map_err(|e| format!("{e}"))?;
+    if max_dim > 0 && dyn_img.width().max(dyn_img.height()) > max_dim {
+        dyn_img = dyn_img.resize(max_dim, max_dim, image::imageops::FilterType::Triangle);
+    }
+    let rgba = dyn_img.into_rgba8();
+    Ok(Handle::from_rgba(
+        rgba.width(),
+        rgba.height(),
+        rgba.into_raw(),
+    ))
+}
+
+pub fn render_zpl_all_to_preview_handles(
+    zpl: &str,
+    opts: LabelRenderOptions,
+) -> Result<Vec<Handle>, String> {
+    let pngs = render_zpl_all_to_pngs(zpl, cap_preview_dpi(opts))?;
+    pngs.iter()
+        .map(|png| decode_png_to_rgba_handle(png))
+        .collect()
 }
 
 fn push_sanitized_zpl_value(out: &mut String, val: &str) {

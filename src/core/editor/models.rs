@@ -31,6 +31,8 @@ pub struct State {
     pub cached_line_numbers: String,
     pub cached_line_count: usize,
     pub preview_cards: Vec<PreviewCard>,
+    #[allow(dead_code)]
+    pub preview_error: Option<String>,
     pub maximized_card: Option<usize>,
 }
 
@@ -51,6 +53,7 @@ impl Default for State {
             cached_line_numbers: "1".to_string(),
             cached_line_count: 1,
             preview_cards: Vec::new(),
+            preview_error: None,
             maximized_card: None,
         }
     }
@@ -61,11 +64,16 @@ impl State {
     pub fn sync_line_numbers(&mut self) {
         let line_count = self.content.line_count().max(1);
         if line_count != self.cached_line_count {
+            use std::fmt::Write;
             self.cached_line_count = line_count;
-            self.cached_line_numbers = (1..=line_count)
-                .map(|i| i.to_string())
-                .collect::<Vec<_>>()
-                .join("\n");
+            let mut buf = String::with_capacity(line_count * 4);
+            for i in 1..=line_count {
+                if i > 1 {
+                    buf.push('\n');
+                }
+                let _ = write!(buf, "{i}");
+            }
+            self.cached_line_numbers = buf;
         }
     }
 }

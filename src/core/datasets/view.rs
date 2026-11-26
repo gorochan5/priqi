@@ -1,5 +1,5 @@
 use iced::widget::{button, column, container, mouse_area, row, rule, space, stack, text, text_input};
-use iced::{Length, Padding, Shadow, Vector, Widget, alignment, border, color};
+use iced::{Length, Padding, Shadow, Widget, alignment, border, color};
 
 use crate::core::datasets::models::{DATASET_RENAME_INPUT_ID, Message, State};
 use crate::core::datasets::widgets::dataset_table::dataset_table;
@@ -129,12 +129,7 @@ fn datasets<'a>(state: &'a State) -> impl Widget<Message> + 'a {
     .style(|_theme| {
         container::Style::default()
             .background(color!(0xfefefe))
-            .border(border::rounded(10).color(color!(0xeaeaea)).width(1.5))
-            .shadow(Shadow {
-                offset: Vector::new(0.0, 2.0),
-                blur_radius: 5.0,
-                color: color!(0x000000, 0.1),
-            })
+            .border(border::rounded(10).color(color!(0xd8dfdd)).width(1.0))
     })
 }
 

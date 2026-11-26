@@ -2,8 +2,6 @@ use iced::Element;
 use iced::Length;
 use iced::Radians;
 use iced::Rotation;
-use iced::Shadow;
-use iced::Vector;
 use iced::Widget;
 use iced::alignment;
 use iced::border;
@@ -358,6 +356,7 @@ fn render_cards_grid<'a>(state: &State, cards: &'a [PreviewCard]) -> Element<'a,
     }
 
     scrollable(grid_col)
+        .smooth_scroll(false)
         .direction(scrollable::Direction::Vertical(
             scrollable::Scrollbar::default(),
         ))
@@ -476,11 +475,6 @@ fn render_card_item<'a>(
         container::Style::default()
             .background(color!(0xffffff))
             .border(border::rounded(10).color(color!(0xcbd5e1)).width(1.0))
-            .shadow(Shadow {
-                offset: Vector::new(0.0, 2.0),
-                blur_radius: 6.0,
-                color: color!(0x000000, 0.06),
-            })
     });
 
     mouse_area(card_box)
@@ -508,11 +502,6 @@ fn render_single_card_maximized<'a>(
             container::Style::default()
                 .background(color!(0xffffff))
                 .border(border::rounded(8).color(color!(0xcbd5e1)).width(1.0))
-                .shadow(Shadow {
-                    offset: Vector::new(0.0, 4.0),
-                    blur_radius: 12.0,
-                    color: color!(0x000000, 0.12),
-                })
         });
 
         let mut content_col = column![space().height(Length::Fixed(16.0))]
@@ -558,6 +547,7 @@ fn render_single_card_maximized<'a>(
 
         container(
             scrollable(content_col)
+                .smooth_scroll(false)
                 .width(Length::Fill)
                 .height(Length::Fill)
                 .style(crate::core::widgets::light_scrollbar_style),

@@ -1,17 +1,17 @@
 [package]
-name = "priqi_iced"
+name = "priqi"
 version = "1.0.0"
 edition = "2024"
 
 [dependencies]
 anyhow = "1.0.104"
 csv = "1.4.0"
-iced = { git = "https://github.com/iced-rs/iced", branch = "master", version = "0.15.0-dev", features = ["image", "canvas", "tokio"] }
-image = { version = "0.25.10", features = ["png"] }
+iced = { git = "https://github.com/iced-rs/iced", branch = "master", version = "0.15.0-dev", default-features = false, features = ["tiny-skia", "image-without-codecs", "tokio", "crisp", "web-colors"] }
+image = { version = "0.25.10", default-features = false, features = ["png"] }
 labelize = "1.9.0"
 serde = { version = "1.0.229", features = ["derive"] }
 sqlx = { version = "0.9.0", features = ["sqlite", "runtime-tokio", "chrono"] }
-tokio = { version = "1.54.0", features = ["full"] }
+tokio = { version = "1.54.0", features = ["rt-multi-thread", "rt", "time", "sync"] }
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["json", "env-filter", "local-time", "fmt"] }
 
@@ -22,4 +22,10 @@ hot = ["iced/hot"]
 [profile.dev]
 incremental = true
 codegen-units = 28
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+panic = "abort"
 

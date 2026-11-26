@@ -17,7 +17,6 @@ pub struct Template {
 
 impl Template {
     pub fn new(id: String, name: String, zpl: String) -> Self {
-        let preview_handle = crate::core::renderer::render_zpl_to_handle(&zpl, 0).ok();
         Self {
             id,
             name,
@@ -25,13 +24,8 @@ impl Template {
             width_mm: 100.0,
             height_mm: 150.0,
             dpi: 203,
-            preview_handle,
+            preview_handle: None,
         }
-    }
-
-    pub fn refresh_preview(&mut self, resolved_zpl: Option<&str>) {
-        let target = resolved_zpl.unwrap_or(&self.zpl);
-        self.preview_handle = crate::core::renderer::render_zpl_to_handle(target, 0).ok();
     }
 }
 

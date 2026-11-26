@@ -1,12 +1,20 @@
-use iced::widget::canvas::{self, Geometry, LineDash, Path, Stroke};
 use iced::widget::{button, center, column, container, space, text};
-use iced::{
-    Background, Color, Element, Font, Length, Point, Rectangle, Renderer, Size, Theme, Widget,
-    alignment, border, color, font,
-};
+use iced::{Background, Element, Font, Length, Widget, alignment, border, color, font};
 
 use crate::core::icons::{circle_alert, cloud_upload, file_check};
-use crate::core::widgets::import_modal::models::{ImportConfig, Message, State};
+use crate::core::widgets::import_modal::models::{ImportConfig, ImportKind, Message, State};
+
+fn format_file_size(bytes: u64) -> String {
+    const KB: f64 = 1024.0;
+    const MB: f64 = 1024.0 * 1024.0;
+    if (bytes as f64) >= MB {
+        format!("{:.1} MB", bytes as f64 / MB)
+    } else if (bytes as f64) >= KB {
+        format!("{:.1} KB", bytes as f64 / KB)
+    } else {
+        format!("{bytes} B")
+    }
+}
 
 pub fn dropzone<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Message> + 'a {
     let border_color = if state.file_error.is_some() {
@@ -41,7 +49,22 @@ pub fn dropzone<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Messa
             .and_then(|n| n.to_str())
             .unwrap_or("Arquivo selecionado")
             .to_string();
-        let line_count = state.content.line_count();
+        let status_text = if state.is_importing {
+            "Importando arquivo...".to_string()
+        } else if state.kind == Some(ImportKind::Datasets) {
+            let size_label = state
+                .selected_file_size
+                .map(format_file_size)
+                .unwrap_or_else(|| "tamanho desconhecido".to_string());
+            format!(
+                "Arquivo pronto ({size_label}) — clique em \"Importar\" abaixo ou clique aqui para trocar"
+            )
+        } else {
+            let line_count = state.content.line_count();
+            format!(
+                "Arquivo carregado ({line_count} linhas) — clique em \"Importar\" abaixo ou clique aqui para trocar"
+            )
+        };
 
         column![
             file_check().size(48).color(color!(0x07bc9f)),
@@ -54,11 +77,9 @@ pub fn dropzone<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Messa
                 })
                 .color(color!(0x0f172a)),
             space().height(Length::Fixed(4.0)),
-            text(format!(
-                "Arquivo carregado ({line_count} linhas) — clique em \"Importar\" abaixo ou clique aqui para trocar"
-            ))
-            .size(12)
-            .color(color!(0x06967f)),
+            text(status_text)
+                .size(12)
+                .color(color!(0x06967f)),
         ]
         .align_x(alignment::Horizontal::Center)
         .boxed()
@@ -98,23 +119,15 @@ pub fn dropzone<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Messa
 
     button(
         container(
-            iced::widget::stack![
-                canvas::Canvas::new(DashedBorderCanvas {
-                    border_color,
-                    ..Default::default()
-                })
+            center(inner_content)
                 .width(Length::Fill)
-                .height(Length::Fill),
-                center(inner_content)
-                    .width(Length::Fill)
-                    .height(Length::Fill)
-                    .padding(16),
-            ]
+                .height(Length::Fill)
+                .padding(16),
         )
         .width(Length::Fill)
         .height(Length::Fill),
     )
-    .on_press(Message::OpenFilePicker(config.kind))
+    .on_press_maybe((!state.is_importing).then_some(Message::OpenFilePicker(config.kind)))
     .width(Length::Fill)
     .height(Length::Fill)
     .padding(0)
@@ -137,64 +150,8 @@ pub fn dropzone<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Messa
 
         button::Style {
             background: Some(Background::Color(bg)),
-            border: border::rounded(12),
+            border: border::rounded(12).color(border_color).width(2.0),
             ..Default::default()
         }
     })
-}
-
-#[derive(Debug, Clone, Copy)]
-struct DashedBorderCanvas {
-    pub border_color: Color,
-    pub border_width: f32,
-    pub radius: f32,
-}
-
-impl Default for DashedBorderCanvas {
-    fn default() -> Self {
-        Self {
-            border_color: color!(0x94a3b8),
-            border_width: 2.0,
-            radius: 12.0,
-        }
-    }
-}
-
-impl<Message> canvas::Program<Message> for DashedBorderCanvas {
-    type State = ();
-
-    fn draw(
-        &self,
-        _state: &Self::State,
-        renderer: &Renderer,
-        _theme: &Theme,
-        bounds: Rectangle,
-        _cursor: iced::mouse::Cursor,
-    ) -> Vec<Geometry> {
-        let mut frame = canvas::Frame::new(renderer, bounds.size());
-        let offset = self.border_width / 2.0;
-        let width = (bounds.width - self.border_width).max(0.0);
-        let height = (bounds.height - self.border_width).max(0.0);
-
-        let path = Path::rounded_rectangle(
-            Point::new(offset, offset),
-            Size::new(width, height),
-            border::radius(self.radius),
-        );
-
-        let stroke = Stroke {
-            style: canvas::stroke::Style::Solid(self.border_color),
-            width: self.border_width,
-            line_dash: LineDash {
-                segments: &[8.0, 6.0],
-                offset: 0,
-            },
-            line_cap: canvas::LineCap::Round,
-            line_join: canvas::LineJoin::Round,
-        };
-
-        frame.stroke(&path, stroke);
-
-        vec![frame.into_geometry()]
-    }
 }

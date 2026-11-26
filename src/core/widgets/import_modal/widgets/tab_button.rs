@@ -1,5 +1,5 @@
 use iced::widget::{button, container, text};
-use iced::{Background, Color, Font, Shadow, Vector, Widget, border, color, font};
+use iced::{Background, Color, Font, Shadow, Widget, border, color, font};
 
 use crate::core::widgets::import_modal::models::{ImportTab, Message};
 
@@ -50,19 +50,17 @@ pub fn tab_button<'a>(
             }
         };
 
+        let border = if is_active {
+            border_radius.color(color!(0xd0d7d5)).width(1.0)
+        } else {
+            border_radius
+        };
+
         button::Style {
             background: Some(Background::Color(bg)),
             text_color,
-            border: border_radius,
-            shadow: if is_active {
-                Shadow {
-                    offset: Vector::new(0.0, 1.0),
-                    blur_radius: 2.0,
-                    color: color!(0x000000, 0.08),
-                }
-            } else {
-                Shadow::default()
-            },
+            border,
+            shadow: Shadow::default(),
             snap: true,
         }
     })

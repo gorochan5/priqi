@@ -4,7 +4,7 @@ use iced::widget::column;
 use iced::widget::space;
 use iced::widget::text;
 use iced::widget::{pick_list, row};
-use iced::{Length, Shadow, Vector, Widget, border, color};
+use iced::{Length, Widget, border, color};
 
 use crate::core::controls::models::{Message, PrinterOption, State};
 use crate::core::icons;
@@ -37,15 +37,10 @@ pub fn printers_dropdown(state: &State) -> impl Widget<Message> {
     .menu_style(|theme| {
         let mut style = menu::default(theme);
         style.background = color!(0xffffff).into();
-        style.border = border::rounded(8).color(color!(0xe2e8f0)).width(1.0);
+        style.border = border::rounded(8).color(color!(0xcbd5e1)).width(1.0);
         style.text_color = color!(0x1e293b);
         style.selected_background = color!(0x07bc9f).into();
         style.selected_text_color = color!(0xffffff);
-        style.shadow = Shadow {
-            offset: Vector::new(0.0, 4.0),
-            blur_radius: 8.0,
-            color: color!(0x000000, 0.08),
-        };
         style
     });
 

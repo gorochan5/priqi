@@ -2,7 +2,7 @@ use iced::alignment;
 use iced::widget::space;
 use iced::widget::text;
 use iced::widget::{button, container, row};
-use iced::{Length, Shadow, Vector, Widget, border, color, font};
+use iced::{Length, Shadow, Widget, border, color, font};
 
 use crate::core::controls::models::{Message, State};
 use crate::core::icons;
@@ -37,22 +37,18 @@ pub fn print_button(state: &State) -> impl Widget<Message> {
     .padding([12, 24])
     .on_press_maybe(on_press)
     .style(|_theme, status| {
-        let (background, shadow_color) = match status {
-            button::Status::Disabled => (color!(0x94a3b8), color!(0x000000, 0.0)),
-            button::Status::Hovered => (color!(0x06967f), color!(0x07bc9f, 0.25)),
-            button::Status::Pressed => (color!(0x057a67), color!(0x07bc9f, 0.25)),
-            _ => (color!(0x07bc9f), color!(0x07bc9f, 0.25)),
+        let background = match status {
+            button::Status::Disabled => color!(0x94a3b8),
+            button::Status::Hovered => color!(0x06967f),
+            button::Status::Pressed => color!(0x057a67),
+            _ => color!(0x07bc9f),
         };
 
         button::Style {
             background: Some(background.into()),
             text_color: color!(0xffffff),
             border: border::rounded(10),
-            shadow: Shadow {
-                offset: Vector::new(0.0, 4.0),
-                blur_radius: 10.0,
-                color: shadow_color,
-            },
+            shadow: Shadow::default(),
             snap: true,
         }
     })

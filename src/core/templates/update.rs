@@ -30,15 +30,22 @@ pub fn update(state: &mut State, message: Message) -> Task<Message> {
                 .as_ref()
                 .and_then(|id| state.templates.iter().enumerate().find(|(_, t)| &t.id == id))
             {
-                let source = source.clone();
-                let base_id = strip_copy_id_suffix(&source.id);
-                let new_id = next_unique_template_id(state, &format!("{base_id}_copia"));
-                let new_name = next_copy_name(&state.templates, &source.name);
+                let source_id = source.id.clone();
+                let source_name = source.name.clone();
+                let source_zpl = source.zpl.clone();
+                let width_mm = source.width_mm;
+                let height_mm = source.height_mm;
+                let dpi = source.dpi;
 
-                let mut new_template = Template::new(new_id.clone(), new_name, source.zpl.clone());
-                new_template.width_mm = source.width_mm;
-                new_template.height_mm = source.height_mm;
-                new_template.dpi = source.dpi;
+                let base_id = strip_copy_id_suffix(&source_id);
+                let new_id = next_unique_template_id(state, &format!("{base_id}_copia"));
+                let new_name = next_copy_name(&state.templates, &source_name);
+
+                let mut new_template = Template::new(new_id.clone(), new_name, source_zpl);
+                new_template.width_mm = width_mm;
+                new_template.height_mm = height_mm;
+                new_template.dpi = dpi;
+                new_template.preview_handle = None;
 
                 state.templates.insert(idx + 1, new_template);
                 state.selected_id = Some(new_id.clone());

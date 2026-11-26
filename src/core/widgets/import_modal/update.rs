@@ -4,7 +4,7 @@ use iced::widget::text_editor;
 
 use super::models::{ImportConfig, ImportKind, Message, State};
 
-const MAX_FILE_SIZE_BYTES: u64 = 10 * 1024 * 1024;
+const MAX_FILE_SIZE_BYTES: u64 = 25 * 1024 * 1024;
 
 pub fn update(state: &mut State, message: Message) -> Task<Message> {
     match message {
@@ -26,8 +26,10 @@ pub fn update(state: &mut State, message: Message) -> Task<Message> {
         Message::EditorAction(action) => {
             if action.is_edit() {
                 state.selected_file = None;
+                state.selected_file_size = None;
             }
             state.content.perform(action);
+            state.sync_line_numbers();
             state.file_error = None;
             Task::none()
         }
@@ -107,29 +109,40 @@ fn load_file_into_state(state: &mut State, path: PathBuf) {
         }
     }
 
-    match std::fs::metadata(&path) {
+    let file_size = match std::fs::metadata(&path) {
         Ok(meta) if meta.len() > MAX_FILE_SIZE_BYTES => {
-            state.file_error = Some("Arquivo muito grande (máximo 10 MB)".to_string());
+            state.file_error = Some("Arquivo muito grande (máximo 25 MB)".to_string());
             return;
         }
         Err(e) => {
             state.file_error = Some(format!("Erro ao acessar arquivo: {e}"));
             return;
         }
-        Ok(_) => {}
+        Ok(meta) => meta.len(),
+    };
+
+    if state.kind == Some(ImportKind::Datasets) {
+        state.selected_file = Some(path);
+        state.selected_file_size = Some(file_size);
+        state.content = text_editor::Content::new();
+        state.sync_line_numbers();
+        state.file_error = None;
+        return;
     }
 
     match std::fs::read(&path) {
         Ok(bytes) => {
             if bytes.len() as u64 > MAX_FILE_SIZE_BYTES {
-                state.file_error = Some("Arquivo muito grande (máximo 10 MB)".to_string());
+                state.file_error = Some("Arquivo muito grande (máximo 25 MB)".to_string());
                 return;
             }
             let text = String::from_utf8_lossy(&bytes);
             // Remove BOM UTF-8 se presente
             let clean_text = text.strip_prefix('\u{feff}').unwrap_or(&text);
             state.content = text_editor::Content::with_text(clean_text);
+            state.sync_line_numbers();
             state.selected_file = Some(path);
+            state.selected_file_size = Some(bytes.len() as u64);
             state.file_error = None;
         }
         Err(e) => {

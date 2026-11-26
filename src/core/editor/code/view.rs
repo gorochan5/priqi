@@ -21,6 +21,7 @@ fn code(state: &State) -> impl Widget<Message> + '_ {
                 .height(Length::Shrink)
                 .align_y(alignment::Vertical::Top),
         )
+        .smooth_scroll(false)
         .direction(scrollable::Direction::Both {
             vertical: scrollable::Scrollbar::default(),
             horizontal: scrollable::Scrollbar::default(),

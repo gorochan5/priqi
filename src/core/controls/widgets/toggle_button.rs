@@ -1,5 +1,5 @@
 use iced::widget::{button, container};
-use iced::{Length, Padding, Shadow, Vector, Widget, border, color};
+use iced::{Length, Padding, Shadow, Widget, border, color};
 
 use crate::core::controls::models::{Message, State};
 use crate::core::icons;
@@ -40,12 +40,7 @@ pub fn toggle_button(state: &State) -> impl Widget<Message> {
         })
         .style(|_theme| {
             container::Style::default()
-                .background(color!(0xeaeaea))
+                .background(color!(0xd8dfdd))
                 .border(border::rounded(border::top(8)))
-                .shadow(Shadow {
-                    offset: Vector::new(0.0, -1.0),
-                    blur_radius: 4.0,
-                    color: color!(0x000000, 0.06),
-                })
         })
 }

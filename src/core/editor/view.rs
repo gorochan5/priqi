@@ -1,7 +1,7 @@
 use iced::widget::{column, container, rule, row};
 use iced::widget::text;
 use iced::widget::space;
-use iced::{Length, Shadow, Vector, Widget, alignment, border, color};
+use iced::{Length, Widget, alignment, border, color};
 
 use crate::core::editor::code;
 use crate::core::editor::models::{Message, State, Tab};
@@ -47,11 +47,6 @@ fn editor(state: &State) -> impl Widget<Message> {
         .style(|_theme| {
             container::Style::default()
                 .background(color!(0xfefefe))
-                .border(border::rounded(10).color(color!(0xeaeaea)).width(1.5))
-                .shadow(Shadow {
-                    offset: Vector::new(0.0, 2.0),
-                    blur_radius: 5.0,
-                    color: color!(0x000000, 0.1),
-                })
+                .border(border::rounded(10).color(color!(0xd8dfdd)).width(1.0))
         })
 }

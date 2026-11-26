@@ -1,5 +1,5 @@
 use iced::widget::{button, column, container, mouse_area, row, space, stack, text, text_input};
-use iced::{Length, Shadow, Vector, Widget, border, color, font, mouse};
+use iced::{Length, Shadow, Widget, border, color, font, mouse};
 
 use crate::core::icons;
 use crate::core::templates::models::{Message, RENAME_INPUT_ID, Template};
@@ -30,11 +30,7 @@ pub fn template_card<'a>(
             background: bg,
             text_color: icon_color,
             border: border::rounded(14).color(color!(0xe2e8f0)).width(1.0),
-            shadow: Shadow {
-                offset: Vector::new(0.0, 1.0),
-                blur_radius: 2.0,
-                color: color!(0x000000, 0.05),
-            },
+            shadow: Shadow::default(),
             snap: true,
         }
     });
@@ -181,20 +177,10 @@ pub fn template_card<'a>(
                 container::Style::default()
                     .background(color!(0xffffff))
                     .border(border::rounded(10).color(color!(0x07bc9f)).width(1.5))
-                    .shadow(Shadow {
-                        offset: Vector::new(0.0, 2.0),
-                        blur_radius: 5.0,
-                        color: color!(0x07bc9f, 0.12),
-                    })
             } else {
                 container::Style::default()
                     .background(color!(0xffffff))
                     .border(border::rounded(10).color(color!(0xe2e8f0)).width(1.0))
-                    .shadow(Shadow {
-                        offset: Vector::new(0.0, 1.0),
-                        blur_radius: 3.0,
-                        color: color!(0x000000, 0.04),
-                    })
             }
         });
 

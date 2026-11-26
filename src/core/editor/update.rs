@@ -34,21 +34,21 @@ pub fn update(state: &mut State, message: Message) -> Task<Message> {
             Task::none()
         }
         Message::LabelWidthChanged(val) => {
-            state.width_input = val.clone();
             if let Ok(parsed) = val.trim().replace(',', ".").parse::<f32>()
                 && (10.0..=500.0).contains(&parsed)
             {
                 state.label_width_mm = parsed;
             }
+            state.width_input = val;
             Task::none()
         }
         Message::LabelHeightChanged(val) => {
-            state.height_input = val.clone();
             if let Ok(parsed) = val.trim().replace(',', ".").parse::<f32>()
                 && (10.0..=500.0).contains(&parsed)
             {
                 state.label_height_mm = parsed;
             }
+            state.height_input = val;
             Task::none()
         }
         Message::LabelDpiSelected(dpi) => {

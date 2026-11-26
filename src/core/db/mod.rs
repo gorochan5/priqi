@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Duration;
 
 use sqlx::Row;
@@ -22,10 +23,12 @@ impl Db {
             .create_if_missing(true)
             .journal_mode(SqliteJournalMode::Wal)
             .synchronous(SqliteSynchronous::Normal)
-            .busy_timeout(Duration::from_secs(5));
+            .busy_timeout(Duration::from_secs(5))
+            .pragma("cache_size", "-512")
+            .statement_cache_capacity(16);
 
         let pool = SqlitePoolOptions::new()
-            .max_connections(5)
+            .max_connections(1)
             .connect_with(options)
             .await?;
 
@@ -47,18 +50,29 @@ impl Db {
         .execute(&pool)
         .await?;
 
-        // Migração idempotente para bancos priqi.db existentes
-        for stmt in [
-            "ALTER TABLE templates ADD COLUMN width_mm REAL NOT NULL DEFAULT 100.0",
-            "ALTER TABLE templates ADD COLUMN height_mm REAL NOT NULL DEFAULT 150.0",
-            "ALTER TABLE templates ADD COLUMN dpi INTEGER NOT NULL DEFAULT 203",
-        ] {
-            if let Err(err) = sqlx::query(stmt).execute(&pool).await {
-                let msg = err.to_string();
-                if !msg.contains("duplicate column name") {
-                    return Err(err.into());
+        let user_version: i64 = sqlx::query("PRAGMA user_version")
+            .fetch_one(&pool)
+            .await?
+            .get(0);
+
+        if user_version < 1 {
+            // Migração idempotente para bancos priqi.db existentes
+            for stmt in [
+                "ALTER TABLE templates ADD COLUMN width_mm REAL NOT NULL DEFAULT 100.0",
+                "ALTER TABLE templates ADD COLUMN height_mm REAL NOT NULL DEFAULT 150.0",
+                "ALTER TABLE templates ADD COLUMN dpi INTEGER NOT NULL DEFAULT 203",
+            ] {
+                if let Err(err) = sqlx::query(stmt).execute(&pool).await {
+                    let msg = err.to_string();
+                    if !msg.contains("duplicate column name") {
+                        return Err(err.into());
+                    }
                 }
             }
+
+            sqlx::query("PRAGMA user_version = 1")
+                .execute(&pool)
+                .await?;
         }
 
         // 2. Tabela de datasets
@@ -143,41 +157,55 @@ impl Db {
         Ok(())
     }
 
-    pub async fn load_datasets(&self) -> Result<Vec<(String, String, TableData)>, anyhow::Error> {
-        let rows =
-            sqlx::query("SELECT id, name, headers, rows FROM datasets ORDER BY created_at ASC")
-                .fetch_all(&self.pool)
-                .await?;
+    pub async fn load_dataset_metadata(&self) -> Result<Vec<(String, String)>, anyhow::Error> {
+        let rows = sqlx::query("SELECT id, name FROM datasets ORDER BY created_at ASC")
+            .fetch_all(&self.pool)
+            .await?;
 
-        let mut datasets = Vec::new();
-        for r in rows {
-            let id: String = r.get("id");
-            let name: String = r.get("name");
-            let headers_csv: String = r.get("headers");
-            let rows_csv: String = r.get("rows");
+        let metadata = rows
+            .into_iter()
+            .map(|r| {
+                let id: String = r.get("id");
+                let name: String = r.get("name");
+                (id, name)
+            })
+            .collect();
 
-            match csv_strings_to_table(&headers_csv, &rows_csv) {
-                Ok(table) => datasets.push((id, name, table)),
-                Err(err) => {
-                    tracing::error!(
-                        dataset_id = %id,
-                        dataset_name = %name,
-                        "Falha ao decodificar dataset CSV do banco: {err}"
-                    );
-                }
-            }
-        }
+        Ok(metadata)
+    }
 
-        Ok(datasets)
+    pub async fn load_dataset_table(
+        &self,
+        id: &str,
+    ) -> Result<Option<Arc<TableData>>, anyhow::Error> {
+        let row = sqlx::query("SELECT headers, rows FROM datasets WHERE id = ?1")
+            .bind(id)
+            .fetch_optional(&self.pool)
+            .await?;
+
+        let Some(row) = row else {
+            return Ok(None);
+        };
+
+        let headers_csv: String = row.get("headers");
+        let rows_csv: String = row.get("rows");
+
+        let table = tokio::task::spawn_blocking(move || {
+            csv_strings_to_table(&headers_csv, &rows_csv)
+        })
+        .await??;
+
+        Ok(Some(Arc::new(table)))
     }
 
     pub async fn save_dataset(
         &self,
         id: &str,
         name: &str,
-        table: &TableData,
+        table: Arc<TableData>,
     ) -> Result<(), anyhow::Error> {
-        let (headers_csv, rows_csv) = table_to_csv_strings(table)?;
+        let (headers_csv, rows_csv) =
+            tokio::task::spawn_blocking(move || table_to_csv_strings(&table)).await??;
 
         sqlx::query(
             r#"
@@ -194,6 +222,18 @@ impl Db {
         .bind(name)
         .bind(&headers_csv)
         .bind(&rows_csv)
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
+    }
+
+    pub async fn rename_dataset(&self, id: &str, name: &str) -> Result<(), anyhow::Error> {
+        sqlx::query(
+            "UPDATE datasets SET name = ?1, updated_at = CURRENT_TIMESTAMP WHERE id = ?2",
+        )
+        .bind(name)
+        .bind(id)
         .execute(&self.pool)
         .await?;
 

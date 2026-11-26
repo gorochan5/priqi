@@ -1,11 +1,10 @@
 use iced::{
-    Length, Shadow, Vector, Widget, alignment, border, color, font, padding,
-    widget::{bottom_right, button, canvas, column, container, opaque, row, space, stack, text},
+    Length, Widget, alignment, border, color, font, padding,
+    widget::{bottom_right, button, column, container, opaque, row, space, stack, text},
 };
 
 use crate::core::icons;
 use crate::core::models::{Message, State};
-use crate::core::widgets::dot_grid::DotGrid;
 
 pub fn view(state: &State) -> impl Widget<Message> {
     app(state)
@@ -63,10 +62,7 @@ fn app(state: &State) -> impl Widget<Message> {
     .width(Length::Fill)
     .height(Length::Fill);
 
-    stack![
-        canvas(DotGrid::default())
-            .width(Length::Fill)
-            .height(Length::Fill),
+    container(stack![
         main_col,
         column![
             crate::core::controls::view::view(&state.controls).map(Message::Controls),
@@ -95,7 +91,10 @@ fn app(state: &State) -> impl Widget<Message> {
             .map(crate::core::datasets::models::Message::ImportModal)
             .map(Message::Datasets)
         }),
-    ]
+    ])
+    .width(Length::Fill)
+    .height(Length::Fill)
+    .style(|_theme| container::Style::default().background(color!(0xf4f6f5)))
 }
 
 fn print_status_toast(status: &str) -> impl Widget<Message> + '_ {
@@ -187,11 +186,6 @@ fn print_status_toast(status: &str) -> impl Widget<Message> + '_ {
         container::Style::default()
             .background(bg)
             .border(border::rounded(18).color(border_color).width(1.25))
-            .shadow(Shadow {
-                offset: Vector::new(0.0, 8.0),
-                blur_radius: 24.0,
-                color: color!(0x000000, 0.14),
-            })
     });
 
     bottom_right(container(opaque(toast_card)).padding(padding::right(16).bottom(16)))

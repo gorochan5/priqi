@@ -1,5 +1,5 @@
 use iced::widget::{button, column, container, row, rule, scrollable, space, text};
-use iced::{Length, Shadow, Vector, Widget, alignment, border, color};
+use iced::{Length, Shadow, Widget, alignment, border, color};
 
 use crate::core::icons::{copy, plus, qr_code};
 use crate::core::templates::models::{Message, State};
@@ -32,6 +32,7 @@ fn templates<'a>(state: &'a State) -> impl Widget<Message> + 'a {
             ));
         }
         scrollable(cards)
+            .smooth_scroll(false)
             .height(Length::Fill)
             .width(Length::Fill)
             .style(crate::core::widgets::light_scrollbar_style)
@@ -70,12 +71,7 @@ fn templates<'a>(state: &'a State) -> impl Widget<Message> + 'a {
     .style(|_theme| {
         container::Style::default()
             .background(color!(0xfefefe))
-            .border(border::rounded(10).color(color!(0xeaeaea)).width(1.5))
-            .shadow(Shadow {
-                offset: Vector::new(0.0, 2.0),
-                blur_radius: 5.0,
-                color: color!(0x000000, 0.1),
-            })
+            .border(border::rounded(10).color(color!(0xd8dfdd)).width(1.0))
     })
 }
 

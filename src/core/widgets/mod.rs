@@ -1,7 +1,6 @@
 use iced::widget::scrollable;
 use iced::{Color, Theme, border, color};
 
-pub mod dot_grid;
 pub mod import_modal;
 
 /// Scrollbar style for light surfaces (muted slate resting, teal hover/drag).

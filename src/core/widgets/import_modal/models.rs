@@ -71,10 +71,14 @@ pub struct State {
     pub kind: Option<ImportKind>,
     pub active_tab: ImportTab,
     pub content: text_editor::Content,
+    pub cached_line_numbers: String,
+    pub cached_line_count: usize,
     pub selected_file: Option<PathBuf>,
+    pub selected_file_size: Option<u64>,
     pub file_error: Option<String>,
     pub is_hovered: bool,
     pub is_picking_file: bool,
+    pub is_importing: bool,
 }
 
 impl Default for State {
@@ -84,10 +88,14 @@ impl Default for State {
             kind: None,
             active_tab: ImportTab::Paste,
             content: text_editor::Content::new(),
+            cached_line_numbers: "1".to_string(),
+            cached_line_count: 1,
             selected_file: None,
+            selected_file_size: None,
             file_error: None,
             is_hovered: false,
             is_picking_file: false,
+            is_importing: false,
         }
     }
 }
@@ -96,9 +104,29 @@ impl State {
     pub fn reset(&mut self) {
         self.is_open = false;
         self.content = text_editor::Content::new();
+        self.sync_line_numbers();
         self.selected_file = None;
+        self.selected_file_size = None;
         self.file_error = None;
         self.is_hovered = false;
         self.is_picking_file = false;
+        self.is_importing = false;
+    }
+
+    /// Recomputes `cached_line_numbers` when `content.line_count()` changes.
+    pub fn sync_line_numbers(&mut self) {
+        use std::fmt::Write as _;
+
+        let line_count = self.content.line_count().max(1);
+        if line_count != self.cached_line_count {
+            self.cached_line_count = line_count;
+            self.cached_line_numbers.clear();
+            for i in 1..=line_count {
+                if i > 1 {
+                    self.cached_line_numbers.push('\n');
+                }
+                let _ = write!(self.cached_line_numbers, "{i}");
+            }
+        }
     }
 }

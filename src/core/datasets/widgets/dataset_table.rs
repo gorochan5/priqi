@@ -6,7 +6,6 @@ use iced::{Element, Length, Widget, alignment, border, color, font, mouse};
 use crate::core::datasets::models::{
     CELL_INPUT_ID, CellCoord, Message, State, TABLE_ROWS_SCROLLABLE_ID, TABLE_SCROLLABLE_ID,
 };
-use crate::core::datasets::update::filtered_row_indices;
 use crate::core::icons;
 
 pub fn dataset_table<'a>(state: &'a State) -> impl Widget<Message> + 'a {
@@ -42,15 +41,7 @@ pub fn dataset_table<'a>(state: &'a State) -> impl Widget<Message> + 'a {
             + (col_count.saturating_sub(1) as f32) * 1.0;
 
         // 1. Headers Row (strictly fixed to 36px)
-        let matching_indices = filtered_row_indices(table, &state.search_query);
-        let all_selected = !matching_indices.is_empty()
-            && matching_indices
-                .iter()
-                .all(|idx| state.selected_rows.contains(idx));
-        let some_selected = !matching_indices.is_empty()
-            && matching_indices
-                .iter()
-                .any(|idx| state.selected_rows.contains(idx));
+        let (all_selected, some_selected) = state.selection_flags();
         let select_all_icon = if all_selected {
             icons::check_square().size(15).color(color!(0x07bc9f))
         } else if some_selected {
@@ -197,15 +188,35 @@ pub fn dataset_table<'a>(state: &'a State) -> impl Widget<Message> + 'a {
             });
 
         // 2. Data Rows (strictly fixed to 40px each)
-        let query = state.search_query.trim().to_lowercase();
+        const ROW_HEIGHT: f32 = 40.0;
+        const DIVIDER_HEIGHT: f32 = 1.0;
+        const ROW_STRIDE: f32 = ROW_HEIGHT + DIVIDER_HEIGHT;
+        const OVERSCAN_ROWS: usize = 6;
+
+        let total_visible = state.visible_row_count();
+        let raw_start = (state.scroll_y.max(0.0) / ROW_STRIDE).floor() as usize;
+        let start_pos = raw_start.saturating_sub(OVERSCAN_ROWS).min(total_visible);
+        let visible_slots =
+            ((state.viewport_height.max(400.0) / ROW_STRIDE).ceil() as usize) + OVERSCAN_ROWS * 2;
+        let end_pos = (start_pos + visible_slots).min(total_visible);
+
         let mut rows_column = column![].width(Length::Fixed(total_width));
 
-        for (row_idx, row_data) in table.rows.iter().enumerate() {
-            if !query.is_empty()
-                && !row_data.iter().any(|c| c.to_lowercase().contains(&query))
-            {
+        if start_pos > 0 {
+            rows_column = rows_column.push(
+                space()
+                    .height(Length::Fixed(start_pos as f32 * ROW_STRIDE))
+                    .boxed(),
+            );
+        }
+
+        for visible_pos in start_pos..end_pos {
+            let Some(row_idx) = state.row_index_at(visible_pos) else {
                 continue;
-            }
+            };
+            let Some(row_data) = table.rows.get(row_idx) else {
+                continue;
+            };
 
             let is_selected = state.is_row_selected(row_idx);
 
@@ -365,6 +376,14 @@ pub fn dataset_table<'a>(state: &'a State) -> impl Widget<Message> + 'a {
                 .push(row_divider.boxed());
         }
 
+        if end_pos < total_visible {
+            rows_column = rows_column.push(
+                space()
+                    .height(Length::Fixed((total_visible - end_pos) as f32 * ROW_STRIDE))
+                    .boxed(),
+            );
+        }
+
         let header_divider = container(space())
             .width(Length::Fixed(total_width))
             .height(Length::Fixed(1.0))
@@ -374,6 +393,11 @@ pub fn dataset_table<'a>(state: &'a State) -> impl Widget<Message> + 'a {
         // wrapped in horizontal scrollable so headers and rows scroll horizontally together.
         let rows_scrollable = scrollable(rows_column)
             .id(TABLE_ROWS_SCROLLABLE_ID)
+            .smooth_scroll(false)
+            .on_scroll(|scroll| Message::TableScrolled {
+                y: scroll.viewport.absolute_offset().y,
+                height: scroll.viewport.bounds.height,
+            })
             .direction(scrollable::Direction::Vertical(
                 scrollable::Scrollbar::default(),
             ))
@@ -391,6 +415,7 @@ pub fn dataset_table<'a>(state: &'a State) -> impl Widget<Message> + 'a {
 
         scrollable(grid)
             .id(TABLE_SCROLLABLE_ID)
+            .smooth_scroll(false)
             .direction(scrollable::Direction::Horizontal(
                 scrollable::Scrollbar::default(),
             ))
@@ -399,8 +424,13 @@ pub fn dataset_table<'a>(state: &'a State) -> impl Widget<Message> + 'a {
             .style(crate::core::widgets::light_scrollbar_style)
             .boxed()
     } else {
+        let empty_label = if state.is_loading_dataset {
+            "Carregando base de dados..."
+        } else {
+            "Selecione um dataset acima..."
+        };
         container(
-            text("Selecione um dataset acima...")
+            text(empty_label)
                 .size(13)
                 .color(color!(0x94a3b8)),
         )

@@ -5,14 +5,8 @@ use super::highlighters::{CsvParser, ZplParser, csv_highlight, zpl_highlight};
 use crate::core::widgets::import_modal::models::{ImportConfig, ImportKind, Message, State};
 
 pub fn paste_editor<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Message> + 'a {
-    let total_lines = state.content.line_count().max(1);
-    let numbers = (1..=total_lines)
-        .map(|i| i.to_string())
-        .collect::<Vec<_>>()
-        .join("\n");
-
     let line_numbers = container(
-        text(numbers)
+        text(&state.cached_line_numbers)
             .font(Font::MONOSPACE)
             .size(13)
             .line_height(1.5)
@@ -54,6 +48,7 @@ pub fn paste_editor<'a>(state: &'a State, config: ImportConfig) -> impl Widget<M
                 .height(Length::Shrink)
                 .align_y(alignment::Vertical::Top),
         )
+        .smooth_scroll(false)
         .width(Length::Fill)
         .height(Length::Fill)
         .style(crate::core::widgets::dark_scrollbar_style),

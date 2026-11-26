@@ -1,5 +1,5 @@
 use iced::widget::{button, center, column, container, mouse_area, opaque, row, space, text};
-use iced::{Element, Font, Length, Shadow, Vector, Widget, alignment, border, color, font};
+use iced::{Element, Font, Length, Shadow, Widget, alignment, border, color, font};
 
 use super::models::{ImportConfig, ImportTab, Message, State};
 use super::widgets::dropzone::dropzone;
@@ -24,7 +24,7 @@ pub fn view<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Message> 
             .center_y(Length::Shrink),
     )
     .padding(6)
-    .on_press(Message::Close)
+    .on_press_maybe((!state.is_importing).then_some(Message::Close))
     .style(|_theme, status| {
         let bg = match status {
             button::Status::Hovered => Some(color!(0xe2e8f0).into()),
@@ -83,12 +83,17 @@ pub fn view<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Message> 
     };
 
     // 4. Botão "Importar" no rodapé
+    let import_label = if state.is_importing {
+        "Importando..."
+    } else {
+        "Importar"
+    };
     let import_button = button(
         container(
             row![
                 arrow_down_to_line().size(18).color(color!(0xffffff)),
                 space().width(Length::Fixed(10.0)),
-                text("Importar")
+                text(import_label)
                     .size(15)
                     .color(color!(0xffffff))
                     .font(iced::Font {
@@ -101,7 +106,7 @@ pub fn view<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Message> 
     )
     .width(Length::Fixed(140.0))
     .padding([9, 20])
-    .on_press(Message::ImportPressed)
+    .on_press_maybe((!state.is_importing).then_some(Message::ImportPressed))
     .style(|_theme, status| {
         let background = match status {
             button::Status::Hovered => color!(0x06967f),
@@ -113,11 +118,7 @@ pub fn view<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Message> 
             background: Some(background.into()),
             text_color: color!(0xffffff),
             border: border::rounded(10),
-            shadow: Shadow {
-                offset: Vector::new(0.0, 4.0),
-                blur_radius: 10.0,
-                color: color!(0x07bc9f, 0.25),
-            },
+            shadow: Shadow::default(),
             snap: true,
         }
     });
@@ -173,20 +174,19 @@ pub fn view<'a>(state: &'a State, config: ImportConfig) -> impl Widget<Message> 
     .style(|_theme| {
         container::Style::default()
             .background(color!(0xf8fafc))
-            .border(border::rounded(16).color(color!(0xe2e8f0)).width(1.5))
-            .shadow(Shadow {
-                offset: Vector::new(0.0, 12.0),
-                blur_radius: 32.0,
-                color: color!(0x000000, 0.20),
-            })
+            .border(border::rounded(16).color(color!(0xcbd5e1)).width(1.5))
     });
 
-    opaque(
-        mouse_area(
-            center(opaque(dialog_card)).style(|_theme| {
-                container::Style::default().background(color!(0x000000, 0.45))
-            }),
-        )
-        .on_press(Message::Close),
-    )
+    let backdrop = mouse_area(
+        center(opaque(dialog_card)).style(|_theme| {
+            container::Style::default().background(color!(0x000000, 0.45))
+        }),
+    );
+    let backdrop = if !state.is_importing {
+        backdrop.on_press(Message::Close)
+    } else {
+        backdrop
+    };
+
+    opaque(backdrop)
 }

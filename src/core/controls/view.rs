@@ -1,5 +1,5 @@
 use iced::widget::{bottom_center, column, container, opaque, row};
-use iced::{Length, Shadow, Vector, Widget, alignment, border, color};
+use iced::{Length, Widget, alignment, border, color};
 
 use crate::core::controls::models::{Message, State};
 use crate::core::controls::widgets::copies_slider::copies_slider;
@@ -32,12 +32,7 @@ fn controls(state: &State) -> impl Widget<Message> {
             .style(|_theme| {
                 container::Style::default()
                     .background(color!(0xfefefe))
-                    .border(border::rounded(10).color(color!(0xeaeaea)).width(1.5))
-                    .shadow(Shadow {
-                        offset: Vector::new(0.0, 2.0),
-                        blur_radius: 5.0,
-                        color: color!(0x000000, 0.1),
-                    })
+                    .border(border::rounded(10).color(color!(0xd8dfdd)).width(1.0))
             });
 
         content = content.push(opaque(card).boxed());
